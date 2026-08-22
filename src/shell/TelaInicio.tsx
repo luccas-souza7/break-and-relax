@@ -1,38 +1,77 @@
 import { useLayoutEffect, useRef } from 'react'
 
-import { Relogio } from './Relogio'
-import { Rodape } from './Rodape'
 import { Button } from '@/components/ui/button'
 import { canAnimateEntrance, gsap } from '@/anim/motion'
-import { NIVEIS, ROTULOS_NIVEL } from './niveis'
-import type { Nivel } from '@/types'
+import type { IdJogo, Nivel } from '@/types'
+import { Relogio } from './Relogio'
+import { Rodape } from './Rodape'
+import { JOGOS, NIVEIS, ROTULOS_JOGO, ROTULOS_NIVEL } from './niveis'
 
 type PropsTelaInicio = {
+  jogo: IdJogo
+  onJogoChange: (jogo: IdJogo) => void
   nivel: Nivel
   onNivelChange: (nivel: Nivel) => void
   onComecar: () => void
+  onTantoFaz: () => void
 }
 
-export function TelaInicio({ nivel, onNivelChange, onComecar }: PropsTelaInicio) {
+/** Same button, twice: the game row must not out-shout the level row. */
+function Escolha({
+  ativo,
+  rotulo,
+  onClick,
+  anim,
+}: {
+  ativo: boolean
+  rotulo: string
+  onClick: () => void
+  anim: string
+}) {
+  return (
+    <button
+      data-anim={anim}
+      type="button"
+      role="radio"
+      aria-checked={ativo}
+      onClick={onClick}
+      className={[
+        'rounded-md border px-4 py-2 text-sm transition-colors',
+        ativo
+          ? 'border-acento text-acento'
+          : 'border-transparent text-tinta-fraca hover:text-tinta',
+      ].join(' ')}
+    >
+      {rotulo}
+    </button>
+  )
+}
+
+export function TelaInicio({
+  jogo,
+  onJogoChange,
+  nivel,
+  onNivelChange,
+  onComecar,
+  onTantoFaz,
+}: PropsTelaInicio) {
   const rootRef = useRef<HTMLDivElement>(null)
 
   /* One timeline, in the order the eye should travel. */
   useLayoutEffect(() => {
     if (!canAnimateEntrance()) return
-    const context = gsap.context(() => {
-      const timeline = gsap.timeline({ defaults: { ease: 'power2.out' } })
-      timeline
+    const contexto = gsap.context(() => {
+      const linha = gsap.timeline({ defaults: { ease: 'power2.out' } })
+      linha
         .from('[data-anim="clock"]', { opacity: 0, y: 12, duration: 0.5 })
         .from('[data-anim="subtitle"]', { opacity: 0, y: 8, duration: 0.35 }, '-=0.2')
-        .from(
-          '[data-anim="level"]',
-          { opacity: 0, y: 8, duration: 0.3, stagger: 0.06 },
-          '-=0.15',
-        )
+        .from('[data-anim="game"]', { opacity: 0, y: 8, duration: 0.3, stagger: 0.06 }, '-=0.15')
+        .from('[data-anim="level"]', { opacity: 0, y: 8, duration: 0.3, stagger: 0.06 }, '-=0.1')
         .from('[data-anim="start"]', { opacity: 0, y: 8, duration: 0.3 }, '-=0.05')
+        .from('[data-anim="qualquer"]', { opacity: 0, duration: 0.3 }, '-=0.05')
         .from('[data-anim="footer"]', { opacity: 0, duration: 0.35 }, '-=0.1')
     }, rootRef)
-    return () => context.revert()
+    return () => contexto.revert()
   }, [])
 
   return (
@@ -53,30 +92,34 @@ export function TelaInicio({ nivel, onNivelChange, onComecar }: PropsTelaInicio)
 
         <div
           role="radiogroup"
-          aria-label="Nível"
+          aria-label="Jogo"
           className="mt-10 flex flex-wrap items-center justify-center gap-2"
         >
-          {NIVEIS.map((option) => {
-            const active = option === nivel
-            return (
-              <button
-                key={option}
-                data-anim="level"
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => onNivelChange(option)}
-                className={[
-                  'rounded-md border px-4 py-2 text-sm transition-colors',
-                  active
-                    ? 'border-acento text-acento'
-                    : 'border-transparent text-tinta-fraca hover:text-tinta',
-                ].join(' ')}
-              >
-                {ROTULOS_NIVEL[option]}
-              </button>
-            )
-          })}
+          {JOGOS.map((opcao) => (
+            <Escolha
+              key={opcao}
+              anim="game"
+              ativo={opcao === jogo}
+              rotulo={ROTULOS_JOGO[opcao]}
+              onClick={() => onJogoChange(opcao)}
+            />
+          ))}
+        </div>
+
+        <div
+          role="radiogroup"
+          aria-label="Nível"
+          className="mt-3 flex flex-wrap items-center justify-center gap-2"
+        >
+          {NIVEIS.map((opcao) => (
+            <Escolha
+              key={opcao}
+              anim="level"
+              ativo={opcao === nivel}
+              rotulo={ROTULOS_NIVEL[opcao]}
+              onClick={() => onNivelChange(opcao)}
+            />
+          ))}
         </div>
 
         <div data-anim="start" className="mt-10">
@@ -87,6 +130,16 @@ export function TelaInicio({ nivel, onNivelChange, onComecar }: PropsTelaInicio)
             Começar
           </Button>
         </div>
+
+        {/* For whoever just wants to stop deciding for ten minutes. */}
+        <button
+          data-anim="qualquer"
+          type="button"
+          onClick={onTantoFaz}
+          className="mt-4 rounded-sm px-2 py-1 text-xs font-normal text-tinta-fraca transition-colors hover:text-tinta"
+        >
+          tanto faz — escolha por mim
+        </button>
       </div>
 
       <div data-anim="footer" className="w-full max-w-xl">

@@ -22,11 +22,13 @@ import { TelaPartida } from './TelaPartida'
  */
 const CARREGADORES: Partial<Record<IdJogo, () => Promise<{ default: JogoQualquer }>>> = {
   xadrez: () => import('@/games/xadrez'),
+  damas: () => import('@/games/damas'),
 }
 
 export default function App() {
   const [jogo, setJogo] = useState<JogoQualquer | null>(null)
   const [estado, setEstado] = useState<unknown>(null)
+  const [escolhido, setEscolhido] = useState<IdJogo>('xadrez')
   const [nivel, setNivel] = useState<Nivel>('normal')
   const [entranceKey, setEntranceKey] = useState(0)
   const [decorridoMs, setDecorridoMs] = useState(0)
@@ -122,20 +124,34 @@ export default function App() {
     )
   }, [desfecho, esquecer])
 
-  const comecar = useCallback(async () => {
-    const carregar = CARREGADORES.xadrez
-    if (!carregar) return
-    const modulo = await carregar()
-    const carregado = modulo.default
-    sair(() => {
-      pedidoRef.current = null
-      inicioRef.current = null
-      setDecorridoMs(0)
-      setJogo(() => carregado)
-      setEstado(carregado.criarEstado())
-      setEntranceKey((k) => k + 1)
-    })
-  }, [sair])
+  const abrir = useCallback(
+    async (id: IdJogo, nivelEscolhido: Nivel) => {
+      const carregar = CARREGADORES[id]
+      if (!carregar) return
+      const { default: carregado } = await carregar()
+      sair(() => {
+        pedidoRef.current = null
+        inicioRef.current = null
+        setDecorridoMs(0)
+        setNivel(nivelEscolhido)
+        setEscolhido(id)
+        setJogo(() => carregado)
+        setEstado(carregado.criarEstado())
+        setEntranceKey((k) => k + 1)
+      })
+    },
+    [sair],
+  )
+
+  const comecar = useCallback(() => void abrir(escolhido, nivel), [abrir, escolhido, nivel])
+
+  /** Removes the decision for whoever just wants to stop thinking. */
+  const tantoFaz = useCallback(() => {
+    const jogos = Object.keys(CARREGADORES) as IdJogo[]
+    const niveis: Nivel[] = ['tranquilo', 'normal', 'desafio']
+    const sorteia = <T,>(lista: T[]) => lista[(Math.random() * lista.length) | 0]
+    void abrir(sorteia(jogos), sorteia(niveis))
+  }, [abrir])
 
   const encerrar = useCallback(() => {
     if (!jogo || estado === null) return
@@ -173,7 +189,14 @@ export default function App() {
           onOutraPartida={outraPartida}
         />
       ) : (
-        <TelaInicio nivel={nivel} onNivelChange={setNivel} onComecar={comecar} />
+        <TelaInicio
+          jogo={escolhido}
+          onJogoChange={setEscolhido}
+          nivel={nivel}
+          onNivelChange={setNivel}
+          onComecar={comecar}
+          onTantoFaz={tantoFaz}
+        />
       )}
     </div>
   )
