@@ -61,6 +61,8 @@ Para gerar a build de produção:
 npm run build
 ```
 
+A build é um bundle clássico com caminhos relativos e o motor embutido, então `dist/index.html` também funciona aberto direto do disco, com dois cliques — sem servidor. É o mesmo arquivo que vai para o GitHub Pages.
+
 ## Peças
 
 O conjunto de peças é o **Cburnett**, de Colin M. L. Burnett, distribuído sob [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Os arquivos estão em `src/assets/pieces/`, sem modificações. É o mesmo conjunto usado pelo Lichess.

@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+// Inlined rather than emitted as its own file: a separate worker script is
+// fetched, and a fetch from a page opened off the disk is blocked outright.
+import EngineWorker from './engine.worker.ts?worker&inline'
 import { MIN_REPLY_MS } from './protocol'
 import type { EngineRequest, EngineResponse } from './protocol'
 import type { Level } from '@/game/types'
@@ -23,9 +26,7 @@ export function useEngine() {
   const [thinking, setThinking] = useState(false)
 
   useEffect(() => {
-    const worker = new Worker(new URL('./engine.worker.ts', import.meta.url), {
-      type: 'module',
-    })
+    const worker = new EngineWorker()
     workerRef.current = worker
 
     worker.addEventListener('message', (event: MessageEvent<EngineResponse>) => {

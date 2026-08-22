@@ -14,10 +14,17 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-/* Offline only. Registered after paint so it never delays the first screen. */
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+/*
+ * Offline only, and strictly optional. Registered after paint so it never
+ * delays the first screen, and skipped outside http(s) — a page opened off
+ * the disk cannot have a service worker, and failing to get one there is not
+ * an error worth putting in the console.
+ */
+if (import.meta.env.PROD && 'serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {
     const base = import.meta.env.BASE_URL
-    void navigator.serviceWorker.register(`${base}sw.js`, { scope: base })
+    void navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).catch(() => {
+      // The game does not need it; everything is already in the bundle.
+    })
   })
 }
