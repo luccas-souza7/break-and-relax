@@ -16,7 +16,6 @@ type PropsTelaPartida = {
   /** Non-null once the game is over. The board stays exactly where it is. */
   desfecho: Desfecho | null
   decorridoMs: number
-  historico: string[]
   onOutraPartida: () => void
 }
 
@@ -41,7 +40,6 @@ export function TelaPartida({
   entranceKey,
   desfecho,
   decorridoMs,
-  historico,
   onOutraPartida,
 }: PropsTelaPartida) {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -216,11 +214,7 @@ export function TelaPartida({
 
       <div className="w-full pt-8 pb-2">
         {desfecho ? (
-          <TelaFim
-            desfecho={desfecho}
-            historico={historico}
-            onOutraPartida={onOutraPartida}
-          />
+          <TelaFim desfecho={desfecho} onOutraPartida={onOutraPartida} />
         ) : (
           /* Leaving is always available, and never made to feel like a failure. */
           <div className="flex justify-center">

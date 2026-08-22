@@ -1,6 +1,6 @@
 # Break And Relax
 
-Um site de uma página onde alguém que está há horas trabalhando joga **uma** partida contra a máquina — xadrez, damas ou dominó —, entende como ela terminou, e volta ao trabalho. A ideia que governa o produto é simples: não queremos que você fique aqui, queremos que você faça uma pausa e volte melhor. O limite não é um cronômetro, é a partida acabar. Sem cadastro, sem ranking, sem streak, sem notificação, sem anúncio.
+Um site de uma página onde alguém que está há horas trabalhando joga **uma** partida contra a máquina — xadrez ou damas —, entende como ela terminou, e volta ao trabalho. A ideia que governa o produto é simples: não queremos que você fique aqui, queremos que você faça uma pausa e volte melhor. O limite não é um cronômetro, é a partida acabar. Sem cadastro, sem ranking, sem streak, sem notificação, sem anúncio.
 
 O relógio é o elemento central da página justamente por não mandar em nada: abre mostrando `--:--`, some por completo durante o jogo, e volta no fim contando de `00:00` até quanto a pausa levou — quando isso já não importa mais.
 
@@ -34,7 +34,7 @@ Três tipos de destaque: **decisivo** (vinho) responde "por que acabou"; **ataca
 
 Não há backend, banco, API em runtime nem CDN.
 
-## Arquitetura: uma casca, três jogos
+## Arquitetura: uma casca, dois jogos
 
 O que sustenta este repositório não são os jogos, é a separação entre eles e a casca.
 
@@ -42,7 +42,7 @@ O que sustenta este repositório não são os jogos, é a separação entre eles
 
 ```ts
 interface Jogo<Estado, Lance> {
-  id: 'xadrez' | 'damas' | 'domino'
+  id: 'xadrez' | 'damas'
   nome: string
   criarEstado(): Estado
   lancesLegais(e: Estado): Lance[]
@@ -50,7 +50,6 @@ interface Jogo<Estado, Lance> {
   encerrar(e: Estado): Estado
   vezDe(e: Estado): 'humano' | 'maquina'
   avaliarFim(e: Estado): Desfecho | null   // null = em andamento
-  historico(e: Estado): string[]
   serializar(e: Estado): unknown           // o que o worker precisa ver
   desserializarLance(e: Estado, bruto: unknown): Lance | null
   Tabuleiro: ComponentType<PropsTabuleiro<Estado, Lance>>
@@ -62,10 +61,10 @@ interface Jogo<Estado, Lance> {
 Consequências que valem mais que o diagrama:
 
 - **Nada em `src/shell/` importa `src/games/*/rules.ts`.** A única menção a `src/games/` na casca é o `import()` dinâmico que carrega um jogo.
-- **Selecionar peça, escolher promoção e decidir em que ponta jogar são do jogo.** A casca recebe um lance pronto e nunca aprende o que é uma promoção.
+- **Selecionar peça e escolher a promoção são do jogo.** A casca recebe um lance pronto e nunca aprende o que é uma promoção.
 - **O `Desfecho` já chega escrito.** Título, explicação e casas para destacar vêm prontos — a casca não sabe o que é um rei.
 - **Um worker por jogo**, criado quando a partida começa e `terminate()` ao sair.
-- **Carregamento sob demanda.** Abrir o site e jogar xadrez não baixa o código de damas nem de dominó.
+- **Carregamento sob demanda.** Abrir o site e jogar xadrez não baixa o código de damas.
 
 ## Como os motores funcionam
 
@@ -77,13 +76,10 @@ Ele recebe `fazer`/`desfazer` sobre uma posição mutável, não um `aplicar` im
 |---|---|---|---|---|
 | Xadrez | prof. 1, sorteia entre os 3 melhores | prof. até 3 | prof. até 4 + quiescência | 600 / 600 / 1000 ms |
 | Damas | prof. 4, sorteia entre os 3 melhores | prof. 6 | prof. 8 | 600 / 600 / 1000 ms |
-| Dominó | lance legal ao acaso | heurística | heurística + inferência | 400 ms |
 
 Damas comporta profundidade muito maior que xadrez com o mesmo orçamento porque a captura obrigatória corta o fator de ramificação de forma agressiva.
 
-**Dominó não tem minimax, e não deveria ter.** É jogo de informação oculta: busca em árvore sobre um estado que a máquina não enxerga seria teatro. O worker recebe uma *vista* — a mesa, a própria mão, quantas pedras o usuário tem e o tamanho do dorme — e nunca a mão do adversário. No nível Desafio ela registra os números em que o usuário passou e usa isso.
-
-A resposta da máquina é sempre segurada por no mínimo 350 ms nos três jogos: resposta instantânea parece bug e quebra o ritmo da pausa.
+A resposta da máquina é sempre segurada por no mínimo 350 ms nos dois jogos: resposta instantânea parece bug e quebra o ritmo da pausa.
 
 **Por que Web Worker** — a busca do Desafio no xadrez consome perto de um segundo de CPU por lance. Na thread principal isso congelaria a interface. Como o GitHub Pages não permite configurar `Cross-Origin-Opener-Policy` e `Cross-Origin-Embedder-Policy`, nada aqui depende de `SharedArrayBuffer`.
 
@@ -101,12 +97,6 @@ Escritas do zero em [`src/games/damas/rules.ts`](src/games/damas/rules.ts), sem 
 4. **Dama voa**: anda e captura à distância, pousando em qualquer casa livre depois da peça capturada. Nunca se saltam duas peças coladas, e as capturadas só saem do tabuleiro no fim da sequência — até lá elas ainda bloqueiam.
 
 Na interface, uma captura múltipla é percorrida **um salto por vez**: a peça fica selecionada e só o próximo destino acende.
-
-### Dominó
-
-Duplo-seis, uma mão. Sete pedras para cada lado, catorze no dorme. Começa quem tem a carroça mais alta. Joga-se nas **duas pontas** — carroça entra atravessada, que é como dominó se parece, mas não abre terceira ponta. Sem pedra jogável, compra do dorme até conseguir; dorme vazio, passa. Vence quem bate; dois passes seguidos com dorme vazio trancam o jogo e ganha quem tem menos pontos na mão.
-
-No fim, **a mão da máquina é revelada** — sem isso não há como conferir a contagem.
 
 ## Como rodar local
 
@@ -126,7 +116,7 @@ npm run preview
 
 ## Peças de xadrez
 
-O conjunto é o **Cburnett**, de Colin M. L. Burnett, distribuído sob [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Os arquivos estão em `src/assets/pieces/`, sem modificações. É o mesmo conjunto usado pelo Lichess. As peças de damas e as pedras de dominó são desenhadas em SVG/CSS na paleta do projeto.
+O conjunto é o **Cburnett**, de Colin M. L. Burnett, distribuído sob [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Os arquivos estão em `src/assets/pieces/`, sem modificações. É o mesmo conjunto usado pelo Lichess. As peças de damas são desenhadas em SVG/CSS na paleta do projeto.
 
 ## Licença
 

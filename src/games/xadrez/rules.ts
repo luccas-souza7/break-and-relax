@@ -110,10 +110,6 @@ export function avaliarFim(e: EstadoXadrez): Desfecho | null {
   return lerDesfecho(e.chess)
 }
 
-export function historico(e: EstadoXadrez): string[] {
-  return e.chess.history()
-}
-
 /** The worker only needs the position. */
 export function serializar(e: EstadoXadrez): string {
   return e.chess.fen()

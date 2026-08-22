@@ -48,7 +48,6 @@ export type EstadoDamas = {
   readonly ultimoLance: { de: number; para: number } | null
   /** Plies with kings only and no capture, for the 20-move draw. */
   readonly lancesEstereis: number
-  readonly historico: string[]
   readonly encerradaPeloUsuario: boolean
 }
 
@@ -98,7 +97,6 @@ export function criarEstado(): EstadoDamas {
     capturadasPelaMaquina: [],
     ultimoLance: null,
     lancesEstereis: 0,
-    historico: [],
     encerradaPeloUsuario: false,
   }
 }
@@ -274,11 +272,6 @@ export function lancesLegais(e: EstadoDamas): LanceDamas[] {
 
 /* ---- applying ---- */
 
-function textoDoLance(lance: LanceDamas): string {
-  const casas = [lance.de, ...lance.passos].map(notacao)
-  return casas.join(lance.capturadas.length > 0 ? 'x' : '-')
-}
-
 export function aplicar(e: EstadoDamas, lance: LanceDamas): EstadoDamas {
   const destino = lance.passos[lance.passos.length - 1]
   const tomadas = new Set(lance.capturadas)
@@ -309,7 +302,6 @@ export function aplicar(e: EstadoDamas, lance: LanceDamas): EstadoDamas {
       e.vez === MAQUINA ? [...e.capturadasPelaMaquina, ...capturadas] : e.capturadasPelaMaquina,
     ultimoLance: { de: lance.de, para: destino },
     lancesEstereis: esteril ? e.lancesEstereis + 1 : 0,
-    historico: [...e.historico, textoDoLance(lance)],
     encerradaPeloUsuario: false,
   }
 }
@@ -368,10 +360,6 @@ export function avaliarFim(e: EstadoDamas): Desfecho | null {
       : `${quem} ainda tinha peças, mas nenhuma delas podia se mover. Quem não tem lance legal perde.`,
     destaques,
   }
-}
-
-export function historico(e: EstadoDamas): string[] {
-  return e.historico
 }
 
 /* ---- worker protocol ---- */

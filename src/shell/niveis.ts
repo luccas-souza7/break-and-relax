@@ -9,10 +9,9 @@ export const ROTULOS_NIVEL: Record<Nivel, string> = {
 }
 
 /** Chess comes pre-selected; it is the one everybody knows. */
-export const JOGOS: IdJogo[] = ['xadrez', 'damas', 'domino']
+export const JOGOS: IdJogo[] = ['xadrez', 'damas']
 
 export const ROTULOS_JOGO: Record<IdJogo, string> = {
   xadrez: 'Xadrez',
   damas: 'Damas',
-  domino: 'Dominó',
 }

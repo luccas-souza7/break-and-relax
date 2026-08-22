@@ -23,7 +23,6 @@ import { TelaPartida } from './TelaPartida'
 const CARREGADORES: Partial<Record<IdJogo, () => Promise<{ default: JogoQualquer }>>> = {
   xadrez: () => import('@/games/xadrez'),
   damas: () => import('@/games/damas'),
-  domino: () => import('@/games/domino'),
 }
 
 export default function App() {
@@ -186,7 +185,6 @@ export default function App() {
           entranceKey={entranceKey}
           desfecho={desfecho}
           decorridoMs={decorridoMs}
-          historico={jogo.historico(estado)}
           onOutraPartida={outraPartida}
         />
       ) : (

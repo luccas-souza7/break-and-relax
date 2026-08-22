@@ -4,22 +4,22 @@ import type { ComponentType } from 'react'
  * The contract between the shell and a game.
  *
  * The shell renders three screens, keeps time, talks to a worker and writes
- * the ending on screen — and knows nothing about chess, draughts or dominoes
- * while doing it. Nothing under `src/shell/` may import from
+ * the ending on screen — and knows nothing about chess or draughts while
+ * doing it. Nothing under `src/shell/` may import from
  * `src/games/<id>/rules.ts`; everything it needs arrives through here.
  *
  * If the shell ever needs to know what a king is, this interface is wrong.
  */
 
-export type IdJogo = 'xadrez' | 'damas' | 'domino'
+export type IdJogo = 'xadrez' | 'damas'
 
 export type Nivel = 'tranquilo' | 'normal' | 'desafio'
 
 export type Resultado = 'vitoria' | 'derrota' | 'empate' | 'encerrada'
 
 /**
- * A place worth looking at once the game is over: a square, or the id of a
- * domino. The shell paints it and never asks what it means.
+ * A place worth looking at once the game is over. The shell paints it and
+ * never asks what it means.
  *
  * `decisivo`  — answers "why did it end": the mated king, the last tile down.
  * `atacante`  — what carried the ending out.
@@ -78,8 +78,6 @@ export type Jogo<Estado, Lance> = {
   vezDe(e: Estado): 'humano' | 'maquina'
   /** null while the game is still going. */
   avaliarFim(e: Estado): Desfecho | null
-  /** Readable notation, newest last. The shell shows only the tail. */
-  historico(e: Estado): string[]
 
   /**
    * What the worker needs to search from. The shell forwards it without
