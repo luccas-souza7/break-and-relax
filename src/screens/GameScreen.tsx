@@ -69,8 +69,19 @@ export function GameScreen({
         {yourTurn ? 'sua vez' : 'pensando'}
       </p>
 
-      <div className="flex w-full max-w-[min(88vh,44rem)] flex-col items-center gap-4 sm:max-w-none sm:flex-row sm:items-start sm:justify-center sm:gap-6">
-        <div className="w-full sm:w-[min(72vh,40rem)]">
+      {/*
+        Three columns, 1fr auto 1fr. The two outer tracks are equal by
+        definition, so the middle one sits dead centre of the viewport no
+        matter what the sides hold — an empty tray and a tray full of captured
+        pieces put the board in exactly the same place. `justify-center` on a
+        flex row would not: there the board drifts by half the width of
+        whatever sits beside it, which is what used to happen here.
+        `min-w-0` lets the side content shrink instead of pushing.
+      */}
+      <div className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-6">
+        <div className="hidden min-w-0 md:block" aria-hidden="true" />
+
+        <div className="w-full justify-self-center md:w-[min(72vh,40rem)]">
           <Board
             pieces={pieces}
             selected={selected}
@@ -83,7 +94,10 @@ export function GameScreen({
             entranceKey={entranceKey}
           />
         </div>
-        <CapturedTray ref={trayRef} byHuman={capturedByHuman} byEngine={capturedByEngine} />
+
+        <div className="min-w-0 overflow-x-auto md:justify-self-start">
+          <CapturedTray ref={trayRef} byHuman={capturedByHuman} byEngine={capturedByEngine} />
+        </div>
       </div>
 
       {/* Leaving is always available, and never made to feel like a failure. */}

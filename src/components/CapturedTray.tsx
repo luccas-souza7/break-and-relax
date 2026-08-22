@@ -18,14 +18,14 @@ function Row({ pieces, label }: { pieces: CapturedPiece[]; label: string }) {
   return (
     <ul
       aria-label={label}
-      className="flex min-h-6 flex-row flex-wrap content-start gap-0.5 sm:flex-col sm:gap-0"
+      className="flex min-h-6 flex-row flex-wrap content-start gap-0.5 md:flex-col md:gap-0"
     >
       {sortForTray(pieces).map((piece) => (
-        <li key={piece.id} className="sm:-mt-3 sm:first:mt-0">
+        <li key={piece.id} className="md:-mt-3 md:first:mt-0">
           <img
             src={PIECE_SVG[piece.color][piece.type]}
             alt={pieceName(piece.color, piece.type)}
-            className="size-6 opacity-70 sm:size-7"
+            className="size-6 opacity-70 md:size-7"
           />
         </li>
       ))}
@@ -42,12 +42,12 @@ export const CapturedTray = forwardRef<HTMLDivElement, CapturedTrayProps>(
     return (
       <div
         ref={ref}
-        className="flex w-full flex-row items-start justify-between gap-4 sm:w-16 sm:flex-col sm:justify-start sm:gap-6"
+        className="flex w-full flex-row items-start justify-between gap-4 md:w-16 md:flex-col md:justify-start md:gap-6"
       >
         <Row pieces={byHuman} label="Peças que você capturou" />
         {/* The rule only earns its place once there is something to separate. */}
         {byHuman.length > 0 && byEngine.length > 0 && (
-          <div aria-hidden="true" className="hidden h-px w-full bg-border sm:block" />
+          <div aria-hidden="true" className="hidden h-px w-full bg-border md:block" />
         )}
         <Row pieces={byEngine} label="Peças que a máquina capturou" />
       </div>

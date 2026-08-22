@@ -185,7 +185,9 @@ export function Board({
   )
 
   return (
-    <div ref={frameRef} className="relative aspect-square w-full">
+    // container-type is what makes `cqw` resolve: the coordinates size
+    // against the board's own width, not the viewport's.
+    <div ref={frameRef} className="relative aspect-square w-full [container-type:inline-size]">
       <div
         ref={squaresRef}
         role="grid"
@@ -240,6 +242,38 @@ export function Board({
                       aria-hidden="true"
                       className="absolute inset-[7%] rounded-full border-4 border-acento/55"
                     />
+                  )}
+
+                  {/*
+                    Coordinates live inside the squares, never in an outer
+                    gutter: a gutter would centre the board-plus-gutter, and
+                    what has to be centred is the board. Hidden from the
+                    reading order — every square's aria-label already opens
+                    with its notation, and repeating it is just noise.
+                  */}
+                  {col === 0 && (
+                    <span
+                      aria-hidden="true"
+                      className={[
+                        'pointer-events-none absolute top-[3%] left-[5%] font-mono font-medium opacity-55',
+                        'text-[clamp(8px,1.1cqw,11px)] leading-none',
+                        isLightSquare(row, col) ? 'text-casa-escura' : 'text-casa-clara',
+                      ].join(' ')}
+                    >
+                      {RANKS[row]}
+                    </span>
+                  )}
+                  {row === 7 && (
+                    <span
+                      aria-hidden="true"
+                      className={[
+                        'pointer-events-none absolute right-[5%] bottom-[3%] font-mono font-medium opacity-55',
+                        'text-[clamp(8px,1.1cqw,11px)] leading-none',
+                        isLightSquare(row, col) ? 'text-casa-escura' : 'text-casa-clara',
+                      ].join(' ')}
+                    >
+                      {FILES[col]}
+                    </span>
                   )}
                 </button>
               )
