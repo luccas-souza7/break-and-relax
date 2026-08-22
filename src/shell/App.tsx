@@ -18,11 +18,12 @@ import { TelaPartida } from './TelaPartida'
 
 /**
  * Loaded on demand: opening the site does not download a game until it is
- * chosen. Draughts and dominoes join this map when they exist.
+ * chosen. All three are here.
  */
 const CARREGADORES: Partial<Record<IdJogo, () => Promise<{ default: JogoQualquer }>>> = {
   xadrez: () => import('@/games/xadrez'),
   damas: () => import('@/games/damas'),
+  domino: () => import('@/games/domino'),
 }
 
 export default function App() {
