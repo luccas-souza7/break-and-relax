@@ -35,6 +35,16 @@ function classicEntryScript() {
       return html
         .replace(/<script\s+type="module"\s+crossorigin\s+/g, '<script defer ')
         .replace(/<link\s+rel="stylesheet"\s+crossorigin\s+/g, '<link rel="stylesheet" ')
+        /*
+         * The dev entry carries a note for anyone who opens it off the disk
+         * and gets a blank page. The build has no use for it — there it would
+         * only ever fire to tell the reader to open the file they already
+         * have open.
+         */
+        .replace(
+          /[ \t]*<!-- dev-entry-notice:start -->[\s\S]*?<!-- dev-entry-notice:end -->\n?/,
+          '',
+        )
     },
   }
 }

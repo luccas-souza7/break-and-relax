@@ -14,5 +14,34 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- dev-entry-notice:start -->
+    <!--
+      This file is the development entry: it loads TypeScript source through
+      the dev server. Opened straight off the disk it can only ever be blank,
+      and a blank page explains nothing. The built site does open from disk —
+      it is dist/index.html — so say that instead of showing nothing.
+
+      Guarded twice: only on file://, and only if nothing ever mounted. In the
+      build, and on any http(s) deploy, this never appears.
+    -->
+    <script>
+      window.addEventListener('load', function () {
+        if (location.protocol !== 'file:') return
+        var root = document.getElementById('root')
+        if (!root || root.childElementCount > 0) return
+        root.setAttribute(
+          'style',
+          'font:400 15px/1.6 ui-sans-serif,system-ui,sans-serif;color:#1B211C;' +
+            'max-width:34rem;margin:20vh auto;padding:0 1.5rem;text-align:center',
+        )
+        root.innerHTML =
+          '<p style="letter-spacing:.2em;font-size:13px">BREAK AND RELAX</p>' +
+          '<p style="margin-top:2rem">Este arquivo é o ponto de entrada de desenvolvimento e ' +
+          'precisa do servidor do Vite.</p>' +
+          '<p style="color:#656B62">Para jogar sem servidor, rode <code>npm run build</code> e ' +
+          'abra <code>dist/index.html</code>. Para desenvolver, rode <code>npm run dev</code>.</p>'
+      })
+    </script>
+    <!-- dev-entry-notice:end -->
   </body>
 </html>
