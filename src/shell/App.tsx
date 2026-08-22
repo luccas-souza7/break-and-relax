@@ -170,7 +170,7 @@ export default function App() {
   }, [sair])
 
   return (
-    <div ref={stageRef}>
+    <div ref={stageRef} className="app">
       {emPartida ? (
         <TelaPartida
           jogo={jogo}

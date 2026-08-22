@@ -23,7 +23,7 @@ export const Relogio = forwardRef<HTMLDivElement, PropsRelogio>(function Relogio
   return (
     <div
       ref={ref}
-      className="relogio text-[clamp(3.25rem,17vw,8.5rem)]"
+      className="relogio text-[clamp(40px,11dvh,120px)]"
       aria-live="off"
     >
       {label}

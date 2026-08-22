@@ -56,7 +56,7 @@ const CONTACTS: Contact[] = [
 
 export const Rodape = forwardRef<HTMLElement>(function Rodape(_props, ref) {
   return (
-    <footer ref={ref} className="flex flex-col items-center gap-3 pb-8 text-center">
+    <footer ref={ref} className="flex flex-col items-center gap-[clamp(4px,1dvh,12px)] text-center">
       <p className="text-xs text-tinta-fraca">Feito por Luccas Souza</p>
       <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
         {CONTACTS.map((contact) => (

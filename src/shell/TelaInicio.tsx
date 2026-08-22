@@ -75,25 +75,30 @@ export function TelaInicio({
   }, [])
 
   return (
+    /*
+      Rows, so everything fits without scrolling: the brand, the clock, the two
+      choice rows, the button and the footer each own a row, and the gaps are
+      tied to viewport height rather than fixed in pixels.
+    */
     <div
       ref={rootRef}
-      className="flex min-h-svh flex-col items-center justify-between px-5 py-10"
+      className="grid h-full grid-rows-[auto_1fr_auto] gap-[clamp(8px,2dvh,24px)] px-5 py-[clamp(10px,3dvh,32px)]"
     >
-      <p className="marca pt-4">Break and Relax</p>
+      <p className="marca text-center">Break and Relax</p>
 
-      <div className="flex flex-col items-center">
-        <div data-anim="clock" className="mt-12">
+      <div className="flex min-h-0 flex-col items-center justify-center gap-[clamp(8px,2dvh,24px)]">
+        <div data-anim="clock">
           <Relogio />
         </div>
 
-        <p data-anim="subtitle" className="mt-6 text-sm text-tinta-fraca sm:text-base">
+        <p data-anim="subtitle" className="text-sm text-tinta-fraca sm:text-base">
           uma partida. o tempo é seu.
         </p>
 
         <div
           role="radiogroup"
           aria-label="Jogo"
-          className="mt-10 flex flex-wrap items-center justify-center gap-2"
+          className="flex flex-wrap items-center justify-center gap-2"
         >
           {JOGOS.map((opcao) => (
             <Escolha
@@ -109,7 +114,7 @@ export function TelaInicio({
         <div
           role="radiogroup"
           aria-label="Nível"
-          className="mt-3 flex flex-wrap items-center justify-center gap-2"
+          className="flex flex-wrap items-center justify-center gap-2"
         >
           {NIVEIS.map((opcao) => (
             <Escolha
@@ -122,7 +127,7 @@ export function TelaInicio({
           ))}
         </div>
 
-        <div data-anim="start" className="mt-10">
+        <div data-anim="start">
           <Button
             onClick={onComecar}
             className="h-11 rounded-md bg-tinta px-10 text-base font-medium text-superficie hover:bg-tinta/90"
@@ -136,14 +141,14 @@ export function TelaInicio({
           data-anim="qualquer"
           type="button"
           onClick={onTantoFaz}
-          className="mt-4 rounded-sm px-2 py-1 text-xs font-normal text-tinta-fraca transition-colors hover:text-tinta"
+          className="rounded-sm px-2 py-1 text-xs font-normal text-tinta-fraca transition-colors hover:text-tinta"
         >
           tanto faz — escolha por mim
         </button>
       </div>
 
-      <div data-anim="footer" className="w-full max-w-xl">
-        <div aria-hidden="true" className="mb-6 h-px w-full bg-border" />
+      <div data-anim="footer" className="mx-auto w-full max-w-xl">
+        <div aria-hidden="true" className="mb-[clamp(6px,1.5dvh,16px)] h-px w-full bg-border" />
         <Rodape />
       </div>
     </div>

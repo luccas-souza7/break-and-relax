@@ -7,34 +7,38 @@ type PropsTelaFim = {
 }
 
 /**
- * What the end of a game says, once the clock has moved out of the way.
+ * What the end of a game says, underneath the board.
  *
- * It sits below the board and never covers it: the point of this screen is
- * that the player can read the sentence and then look at the position that
- * produced it.
+ * Returned as a fragment on purpose: these are three separate rows of the
+ * screen's grid, not one block. A wrapper would make them share a single row
+ * and take the height away from the board in one lump.
  */
 export function TelaFim({ desfecho, onOutraPartida }: PropsTelaFim) {
   return (
-    <div className="flex w-full flex-col items-center">
-      <div data-fim="cartao" className="w-full max-w-md text-center">
-        <h2 className="font-display text-lg font-semibold text-tinta sm:text-xl">
+    <>
+      <div data-fim="cartao" className="mx-auto w-full max-w-md text-center">
+        <h2 className="font-display text-[clamp(15px,2.2dvh,20px)] leading-tight font-semibold text-tinta">
           {desfecho.titulo}
         </h2>
-        <p className="mt-2 text-sm text-tinta-fraca text-balance">{desfecho.explicacao}</p>
-
+        <p className="mt-1 text-[clamp(12px,1.7dvh,14px)] leading-snug text-tinta-fraca text-balance">
+          {desfecho.explicacao}
+        </p>
       </div>
 
-      <div data-fim="acoes" className="flex w-full max-w-xl flex-col items-center">
+      <div data-fim="acoes" className="flex justify-center">
         <button
           type="button"
           onClick={onOutraPartida}
-          className="mt-8 rounded-sm px-2 py-1 text-sm font-normal text-tinta-fraca transition-colors hover:text-tinta"
+          className="rounded-sm px-2 py-1 text-sm font-normal text-tinta-fraca transition-colors hover:text-tinta"
         >
           Outra partida
         </button>
-        <div aria-hidden="true" className="mt-8 mb-6 h-px w-full bg-border" />
+      </div>
+
+      <div data-fim="rodape" className="mx-auto w-full max-w-xl">
+        <div aria-hidden="true" className="mb-[clamp(6px,1.5dvh,16px)] h-px w-full bg-border" />
         <Rodape />
       </div>
-    </div>
+    </>
   )
 }
