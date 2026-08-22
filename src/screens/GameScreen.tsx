@@ -14,7 +14,8 @@ type GameScreenProps = {
   capturedByHuman: CapturedPiece[]
   capturedByEngine: CapturedPiece[]
   checkPulse: number
-  thinking: boolean
+  /** True only when the board is genuinely waiting on the user. */
+  yourTurn: boolean
   onSquare: (square: Square) => void
   onResign: () => void
   entranceKey: number
@@ -32,7 +33,7 @@ export function GameScreen({
   capturedByHuman,
   capturedByEngine,
   checkPulse,
-  thinking,
+  yourTurn,
   onSquare,
   onResign,
   entranceKey,
@@ -65,7 +66,7 @@ export function GameScreen({
         aria-live="polite"
         className="pt-2 pb-6 text-sm tracking-wide text-acento sm:text-base"
       >
-        {thinking ? 'pensando' : 'sua vez'}
+        {yourTurn ? 'sua vez' : 'pensando'}
       </p>
 
       <div className="flex w-full max-w-[min(88vh,44rem)] flex-col items-center gap-4 sm:max-w-none sm:flex-row sm:items-start sm:justify-center sm:gap-6">
@@ -75,7 +76,7 @@ export function GameScreen({
             selected={selected}
             targets={targets}
             lastMove={lastMove}
-            interactive={!thinking}
+            interactive={yourTurn}
             onSquare={onSquare}
             checkPulse={checkPulse}
             trayRef={trayRef}

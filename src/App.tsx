@@ -6,7 +6,7 @@ import { GameScreen } from '@/screens/GameScreen'
 import { StartScreen } from '@/screens/StartScreen'
 import { gsap, prefersReducedMotion } from '@/anim/motion'
 import { useEngine } from '@/engine/useEngine'
-import { ENGINE, useChessGame } from '@/game/useChessGame'
+import { ENGINE, HUMAN, useChessGame } from '@/game/useChessGame'
 import type { Level, Screen } from '@/game/types'
 
 /**
@@ -123,7 +123,10 @@ export default function App() {
           capturedByHuman={game.capturedByHuman}
           capturedByEngine={game.capturedByEngine}
           checkPulse={game.checkPulse}
-          thinking={thinking}
+          /* The machine's turn starts the moment the user moves, not when the
+             worker gets around to answering — otherwise the indicator says
+             "sua vez" for a beat while the board is not actually yours. */
+          yourTurn={!game.outcome && game.turn === HUMAN && !thinking}
           onSquare={game.selectSquare}
           onResign={game.resign}
           entranceKey={entranceKey}

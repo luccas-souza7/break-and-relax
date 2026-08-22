@@ -45,7 +45,10 @@ export const CapturedTray = forwardRef<HTMLDivElement, CapturedTrayProps>(
         className="flex w-full flex-row items-start justify-between gap-4 sm:w-16 sm:flex-col sm:justify-start sm:gap-6"
       >
         <Row pieces={byHuman} label="Peças que você capturou" />
-        <div aria-hidden="true" className="hidden h-px w-full bg-border sm:block" />
+        {/* The rule only earns its place once there is something to separate. */}
+        {byHuman.length > 0 && byEngine.length > 0 && (
+          <div aria-hidden="true" className="hidden h-px w-full bg-border sm:block" />
+        )}
         <Row pieces={byEngine} label="Peças que a máquina capturou" />
       </div>
     )

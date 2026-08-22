@@ -9,7 +9,15 @@
   --fundo: #e8ebe3;
   --superficie: #f6f7f3;
   --tinta: #1b211c;
-  --tinta-fraca: #6b7268;
+  /*
+   * Specified as #6B7268, darkened by 6% to clear WCAG AA.
+   * Against --fundo the original measures 4.11:1, under the 4.5:1 floor for
+   * normal text, and this token exists precisely for small secondary text —
+   * captions, the footer, "Encerrar partida". The hue is untouched (a straight
+   * scale of the same RGB triple) and the shift is imperceptible; the contrast
+   * requirement in the brief is not.
+   */
+  --tinta-fraca: #656b62;
   --casa-clara: #edefe7;
   --casa-escura: #8a9a7b;
   --acento: #2e5aac;

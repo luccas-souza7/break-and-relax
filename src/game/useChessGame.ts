@@ -172,11 +172,18 @@ export function useChessGame() {
   /** Ending the break is never questioned and never blamed on the user. */
   const resign = useCallback(() => {
     clearSelection()
-    setSnapshot((current) => ({
-      ...current,
-      outcome: 'encerrada',
-      elapsedMs: startedAt.current === null ? 0 : performance.now() - startedAt.current,
-    }))
+    setSnapshot((current) =>
+      /* A game that already ended keeps how it ended. The end screen takes a
+         moment to arrive, and a click landing in that gap must not rewrite a
+         checkmate into "Encerrada". */
+      current.outcome
+        ? current
+        : {
+            ...current,
+            outcome: 'encerrada',
+            elapsedMs: startedAt.current === null ? 0 : performance.now() - startedAt.current,
+          },
+    )
   }, [clearSelection])
 
   /** Called when the game ends by a chess condition rather than by leaving. */
