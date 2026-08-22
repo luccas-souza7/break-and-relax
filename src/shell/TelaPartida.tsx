@@ -194,7 +194,11 @@ export function TelaPartida({
       <div className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-6">
         <div className="hidden min-w-0 md:block" aria-hidden="true" />
 
-        <div ref={tabuleiroRef} className="w-full justify-self-center md:w-[min(72vh,40rem)]">
+        <div
+          ref={tabuleiroRef}
+          data-centro
+          className="w-full justify-self-center md:w-[min(72vh,40rem)]"
+        >
           <Tabuleiro
             estado={estado}
             lancesLegais={lancesLegais}

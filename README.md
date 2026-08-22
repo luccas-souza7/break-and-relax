@@ -1,8 +1,8 @@
 # Break And Relax
 
-Um site de uma página onde alguém que está há horas trabalhando joga uma partida de xadrez contra a máquina, do começo ao fim, e volta ao trabalho. A ideia que governa o produto é simples: não queremos que você fique aqui, queremos que você faça uma pausa e volte melhor. O limite não é um cronômetro, é a partida acabar — não existe contagem regressiva, tempo por lance ou aviso de que a pausa está terminando. Sem cadastro, sem ranking, sem streak, sem notificação, sem anúncio. Quando a partida acaba, o site diz uma frase curta e para de falar.
+Um site de uma página onde alguém que está há horas trabalhando joga **uma** partida contra a máquina — xadrez, damas ou dominó —, entende como ela terminou, e volta ao trabalho. A ideia que governa o produto é simples: não queremos que você fique aqui, queremos que você faça uma pausa e volte melhor. O limite não é um cronômetro, é a partida acabar. Sem cadastro, sem ranking, sem streak, sem notificação, sem anúncio.
 
-O relógio é o elemento central da página justamente por não mandar em nada: abre mostrando `--:--`, some por completo durante o jogo, e volta no fim para dizer quanto tempo a pausa levou, quando isso já não importa mais.
+O relógio é o elemento central da página justamente por não mandar em nada: abre mostrando `--:--`, some por completo durante o jogo, e volta no fim contando de `00:00` até quanto a pausa levou — quando isso já não importa mais.
 
 ## Site
 
@@ -12,38 +12,101 @@ https://luccas-souza7.github.io/break-and-relax/
 
 ![Tela de início do Break And Relax](docs/tela-inicio.png)
 
+## Quem perdeu precisa entender por quê
+
+A tela de fim é o oposto de um "você perdeu". O tabuleiro **fica exatamente onde estava, em 100% de opacidade**, as casas que decidiram a partida acendem, e a explicação aparece embaixo — com as casas e as peças reais, nunca um texto genérico.
+
+![Tela de fim, com o mate destacado](docs/tela-fim.png)
+
+Três tipos de destaque: **decisivo** (vinho) responde "por que acabou"; **atacante** (azul) é quem executou; **bloqueado** (hachurado) são as casas para onde o rei não podia ir — é isso que faz um mate ou um afogamento fazer sentido de olhar.
+
 ## Stack
 
 - Vite + React 18 + TypeScript
 - Tailwind CSS v4 (plugin oficial do Vite)
-- chess.js — todas as regras do jogo
-- Motor próprio: minimax com poda alfa-beta, em Web Worker
+- chess.js — todas as regras do xadrez
+- Motor próprio: minimax com poda alfa-beta em Web Worker, um por jogo
 - GSAP (core) para a sequência de animação
 - shadcn/ui (`button`, `dialog`, `tooltip`) e lucide-react
 - Fontes auto-hospedadas via Fontsource: Bricolage Grotesque, Public Sans, Martian Mono
+- `vite-plugin-pwa` só para precache — sem manifesto, sem prompt de instalação
 - Deploy estático via GitHub Actions para GitHub Pages
 
-Não há backend, banco, API em runtime nem CDN. Depois do primeiro carregamento o site funciona offline.
+Não há backend, banco, API em runtime nem CDN.
 
-## Como o motor funciona
+## Arquitetura: uma casca, três jogos
 
-O código do motor está em `src/engine/`.
+O que sustenta este repositório não são os jogos, é a separação entre eles e a casca.
 
-**Avaliação** (`evaluation.ts`) — material (peão 100, cavalo 320, bispo 330, torre 500, dama 900), *piece-square tables* no estilo da avaliação simplificada de Michniewski, com tabela separada de rei para meio-jogo e final, mais um pequeno bônus de mobilidade. Xeque-mate vale ±100000 ajustado pela profundidade, para que um mate mais curto seja preferido.
+`src/shell/` renderiza as telas, cronometra, conversa com o worker e escreve o desfecho **sem saber que jogo está rodando**. Tudo chega por um contrato em [`src/types.ts`](src/types.ts):
 
-**Busca** (`search.ts`) — minimax em forma negamax com poda alfa-beta, ordenação de lances por MVV-LVA (capturas de peça valiosa por peça barata primeiro, promoções em seguida) e aprofundamento iterativo. Cada nível tem um teto rígido de tempo: quando o tempo acaba no meio de uma iteração, a iteração inteira é descartada e a resposta vem da última profundidade que terminou de verdade — uma profundidade pela metade joga pior que uma profundidade menor completa.
+```ts
+interface Jogo<Estado, Lance> {
+  id: 'xadrez' | 'damas' | 'domino'
+  nome: string
+  criarEstado(): Estado
+  lancesLegais(e: Estado): Lance[]
+  aplicar(e: Estado, l: Lance): Estado
+  encerrar(e: Estado): Estado
+  vezDe(e: Estado): 'humano' | 'maquina'
+  avaliarFim(e: Estado): Desfecho | null   // null = em andamento
+  historico(e: Estado): string[]
+  serializar(e: Estado): unknown           // o que o worker precisa ver
+  desserializarLance(e: Estado, bruto: unknown): Lance | null
+  Tabuleiro: ComponentType<PropsTabuleiro<Estado, Lance>>
+  Lateral?: ComponentType<PropsLateral<Estado>>
+  criarWorker(): Worker
+}
+```
 
-| Nível | Profundidade | Teto | Comportamento |
-|---|---|---|---|
-| Tranquilo | 1 | 600 ms | sorteia entre os 3 melhores lances com peso decrescente; não pune erro bobo |
-| Normal | até 3 | 600 ms | joga o melhor lance da busca |
-| Desafio | até 4 + quiescência em capturas | 1000 ms | joga o melhor lance da busca |
+Consequências que valem mais que o diagrama:
 
-A resposta da máquina é sempre segurada por no mínimo 350 ms, mesmo quando o cálculo termina antes: resposta instantânea parece bug e quebra o ritmo da pausa.
+- **Nada em `src/shell/` importa `src/games/*/rules.ts`.** A única menção a `src/games/` na casca é o `import()` dinâmico que carrega um jogo.
+- **Selecionar peça, escolher promoção e decidir em que ponta jogar são do jogo.** A casca recebe um lance pronto e nunca aprende o que é uma promoção.
+- **O `Desfecho` já chega escrito.** Título, explicação e casas para destacar vêm prontos — a casca não sabe o que é um rei.
+- **Um worker por jogo**, criado quando a partida começa e `terminate()` ao sair.
+- **Carregamento sob demanda.** Abrir o site e jogar xadrez não baixa o código de damas nem de dominó.
 
-**Por que Web Worker** — a busca do nível Desafio consome perto de um segundo de CPU por lance. Na thread principal isso congelaria a interface: a animação travaria e o clique não responderia. No worker a UI continua fluida enquanto a máquina pensa. O worker é *stateless* — cada requisição carrega o FEN da posição —, o que torna impossível o motor e o tabuleiro saírem de sincronia. Como o GitHub Pages não permite configurar os headers `Cross-Origin-Opener-Policy` e `Cross-Origin-Embedder-Policy`, nada aqui depende de `SharedArrayBuffer`; a comunicação é por mensagem.
+## Como os motores funcionam
 
-**Uma nota sobre o chess.js** (`internal.ts`) — as regras vêm inteiramente do chess.js, mas a busca não usa a API pública `moves({ verbose: true })`. Cada objeto `Move` que ela devolve regenera a lista completa de lances legais para desambiguar o SAN e serializa dois FENs (`before` e `after`). Medido numa posição de meio-jogo, isso dá cerca de 3000 µs por chamada contra cerca de 70 µs do gerador que está por baixo — 40 vezes mais caro, o que inviabiliza qualquer busca real. Por isso a busca chama o gerador diretamente. Nenhuma regra de xadrez é reimplementada: o que se evita é apenas a formatação que uma busca nunca lê. Tudo que o usuário toca continua passando pela API pública.
+`src/engine/minimax.ts` é genérico e serve xadrez e damas: minimax em forma negamax com poda alfa-beta, ordenação de lances, aprofundamento iterativo e teto rígido de tempo — quando o tempo acaba no meio de uma iteração, a iteração inteira é descartada e a resposta vem da última profundidade que terminou de verdade.
+
+Ele recebe `fazer`/`desfazer` sobre uma posição mutável, não um `aplicar` imutável. Isso é deliberado: o chess.js leva cerca de 70 µs para gerar os lances de uma posição, e clonar a posição a cada nó custaria mais que a própria busca.
+
+| Jogo | Tranquilo | Normal | Desafio | Teto por lance |
+|---|---|---|---|---|
+| Xadrez | prof. 1, sorteia entre os 3 melhores | prof. até 3 | prof. até 4 + quiescência | 600 / 600 / 1000 ms |
+| Damas | prof. 4, sorteia entre os 3 melhores | prof. 6 | prof. 8 | 600 / 600 / 1000 ms |
+| Dominó | lance legal ao acaso | heurística | heurística + inferência | 400 ms |
+
+Damas comporta profundidade muito maior que xadrez com o mesmo orçamento porque a captura obrigatória corta o fator de ramificação de forma agressiva.
+
+**Dominó não tem minimax, e não deveria ter.** É jogo de informação oculta: busca em árvore sobre um estado que a máquina não enxerga seria teatro. O worker recebe uma *vista* — a mesa, a própria mão, quantas pedras o usuário tem e o tamanho do dorme — e nunca a mão do adversário. No nível Desafio ela registra os números em que o usuário passou e usa isso.
+
+A resposta da máquina é sempre segurada por no mínimo 350 ms nos três jogos: resposta instantânea parece bug e quebra o ritmo da pausa.
+
+**Por que Web Worker** — a busca do Desafio no xadrez consome perto de um segundo de CPU por lance. Na thread principal isso congelaria a interface. Como o GitHub Pages não permite configurar `Cross-Origin-Opener-Policy` e `Cross-Origin-Embedder-Policy`, nada aqui depende de `SharedArrayBuffer`.
+
+**Uma nota sobre o chess.js** ([`internoChessJs.ts`](src/games/xadrez/internoChessJs.ts)) — as regras vêm inteiramente do chess.js, mas a busca não usa a API pública `moves({ verbose: true })`. Cada objeto `Move` que ela devolve regenera a lista completa de lances legais para desambiguar o SAN e serializa dois FENs. Medido numa posição de meio-jogo, isso dá cerca de 3000 µs por chamada contra cerca de 70 µs do gerador que está por baixo — 40 vezes mais caro, o que inviabiliza qualquer busca real. Nenhuma regra é reimplementada; o que se evita é a formatação que uma busca nunca lê.
+
+## Regras implementadas
+
+### Damas (brasileiras)
+
+Escritas do zero em [`src/games/damas/rules.ts`](src/games/damas/rules.ts), sem biblioteca. As quatro que decidem partidas:
+
+1. **Captura é obrigatória** — havendo captura, nenhum lance simples é legal.
+2. **Lei da maioria** — entre as sequências possíveis, é obrigatório escolher a que captura mais peças. Empate na quantidade, escolha livre. Sem lei da qualidade e sem sopro.
+3. **Promoção só ao terminar** na última fileira. Uma pedra que apenas *passa* por ela no meio de uma captura continua pedra.
+4. **Dama voa**: anda e captura à distância, pousando em qualquer casa livre depois da peça capturada. Nunca se saltam duas peças coladas, e as capturadas só saem do tabuleiro no fim da sequência — até lá elas ainda bloqueiam.
+
+Na interface, uma captura múltipla é percorrida **um salto por vez**: a peça fica selecionada e só o próximo destino acende.
+
+### Dominó
+
+Duplo-seis, uma mão. Sete pedras para cada lado, catorze no dorme. Começa quem tem a carroça mais alta. Joga-se nas **duas pontas** — carroça entra atravessada, que é como dominó se parece, mas não abre terceira ponta. Sem pedra jogável, compra do dorme até conseguir; dorme vazio, passa. Vence quem bate; dois passes seguidos com dorme vazio trancam o jogo e ganha quem tem menos pontos na mão.
+
+No fim, **a mão da máquina é revelada** — sem isso não há como conferir a contagem.
 
 ## Como rodar local
 
@@ -55,17 +118,15 @@ npm i
 npm run dev
 ```
 
-Para gerar a build de produção:
+Para conferir a build de produção:
 
 ```bash
-npm run build
+npm run preview
 ```
 
-A build é um bundle clássico com caminhos relativos e o motor embutido, então `dist/index.html` também funciona aberto direto do disco, com dois cliques — sem servidor. É o mesmo arquivo que vai para o GitHub Pages.
+## Peças de xadrez
 
-## Peças
-
-O conjunto de peças é o **Cburnett**, de Colin M. L. Burnett, distribuído sob [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Os arquivos estão em `src/assets/pieces/`, sem modificações. É o mesmo conjunto usado pelo Lichess.
+O conjunto é o **Cburnett**, de Colin M. L. Burnett, distribuído sob [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Os arquivos estão em `src/assets/pieces/`, sem modificações. É o mesmo conjunto usado pelo Lichess. As peças de damas e as pedras de dominó são desenhadas em SVG/CSS na paleta do projeto.
 
 ## Licença
 
