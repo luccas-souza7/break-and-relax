@@ -5,7 +5,7 @@ import type { Chess, Color, PieceSymbol } from 'chess.js'
  * Always scored from White's point of view; the search flips the sign.
  */
 
-export const PIECE_VALUE: Record<PieceSymbol, number> = {
+export const VALOR_PECA: Record<PieceSymbol, number> = {
   p: 100,
   n: 320,
   b: 330,
@@ -14,7 +14,7 @@ export const PIECE_VALUE: Record<PieceSymbol, number> = {
   k: 20000,
 }
 
-export const MATE_SCORE = 100000
+export const MATE = 100000
 
 /* Tables are written the way the board reads: index 0 is a8, index 63 is h1.
    They are stated from White's side and mirrored vertically for Black. */
@@ -115,13 +115,13 @@ function squareBonus(type: PieceSymbol, color: Color, index: number, endgame: bo
   return TABLES[type][i]
 }
 
-export function evaluate(chess: Chess, moveCount?: number): number {
+export function avaliar(chess: Chess, moveCount?: number): number {
   const board = chess.board()
 
   let heavyMaterial = 0
   for (const row of board) {
     for (const cell of row) {
-      if (cell && cell.type !== 'p' && cell.type !== 'k') heavyMaterial += PIECE_VALUE[cell.type]
+      if (cell && cell.type !== 'p' && cell.type !== 'k') heavyMaterial += VALOR_PECA[cell.type]
     }
   }
   const endgame = heavyMaterial < ENDGAME_THRESHOLD
@@ -132,7 +132,7 @@ export function evaluate(chess: Chess, moveCount?: number): number {
       const cell = board[row][col]
       if (!cell) continue
       const index = row * 8 + col
-      const value = PIECE_VALUE[cell.type] + squareBonus(cell.type, cell.color, index, endgame)
+      const value = VALOR_PECA[cell.type] + squareBonus(cell.type, cell.color, index, endgame)
       score += cell.color === 'w' ? value : -value
     }
   }

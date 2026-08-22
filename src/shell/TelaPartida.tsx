@@ -1,31 +1,23 @@
 import { useLayoutEffect, useRef } from 'react'
-import type { Square } from 'chess.js'
 
-import { Board } from '@/components/Board'
-import { CapturedTray } from '@/components/CapturedTray'
-import { EndPanel } from '@/screens/EndPanel'
 import { canAnimateEntrance, gsap, prefersReducedMotion } from '@/anim/motion'
-import { formatDuration } from '@/game/time'
-import type { CapturedPiece, Desfecho, PieceView } from '@/game/types'
+import type { Desfecho, JogoQualquer } from '@/types'
+import { TelaFim } from './TelaFim'
+import { formatDuration } from './time'
 
-type GameScreenProps = {
-  pieces: PieceView[]
-  selected: Square | null
-  targets: ReadonlyMap<Square, boolean>
-  lastMove: { from: Square; to: Square } | null
-  capturedByHuman: CapturedPiece[]
-  capturedByEngine: CapturedPiece[]
-  checkPulse: number
-  /** True only when the board is genuinely waiting on the user. */
-  yourTurn: boolean
-  onSquare: (square: Square) => void
-  onResign: () => void
+type PropsTelaPartida = {
+  jogo: JogoQualquer
+  estado: unknown
+  lancesLegais: unknown[]
+  suaVez: boolean
+  onLance: (lance: unknown) => void
+  onEncerrar: () => void
   entranceKey: number
   /** Non-null once the game is over. The board stays exactly where it is. */
   desfecho: Desfecho | null
-  elapsedMs: number
+  decorridoMs: number
   historico: string[]
-  onRestart: () => void
+  onOutraPartida: () => void
 }
 
 /**
@@ -39,32 +31,30 @@ type GameScreenProps = {
  * underneath. Unmounting the board and mounting an end screen would move it,
  * and moving it is the one thing this must not do.
  */
-export function GameScreen({
-  pieces,
-  selected,
-  targets,
-  lastMove,
-  capturedByHuman,
-  capturedByEngine,
-  checkPulse,
-  yourTurn,
-  onSquare,
-  onResign,
+export function TelaPartida({
+  jogo,
+  estado,
+  lancesLegais,
+  suaVez,
+  onLance,
+  onEncerrar,
   entranceKey,
   desfecho,
-  elapsedMs,
+  decorridoMs,
   historico,
-  onRestart,
-}: GameScreenProps) {
+  onOutraPartida,
+}: PropsTelaPartida) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const trayRef = useRef<HTMLDivElement>(null)
-  const boardRef = useRef<HTMLDivElement>(null)
+  const tabuleiroRef = useRef<HTMLDivElement>(null)
   const tempoRef = useRef<HTMLDivElement>(null)
+
+  const Tabuleiro = jogo.Tabuleiro
+  const Lateral = jogo.Lateral
 
   /* The turn indicator arrives after the board has finished assembling. */
   useLayoutEffect(() => {
     if (!canAnimateEntrance()) return
-    const context = gsap.context(() => {
+    const contexto = gsap.context(() => {
       gsap.from('[data-anim="turn"]', {
         opacity: 0,
         y: 6,
@@ -73,7 +63,7 @@ export function GameScreen({
         ease: 'power2.out',
       })
     }, rootRef)
-    return () => context.revert()
+    return () => contexto.revert()
   }, [entranceKey])
 
   /*
@@ -88,12 +78,12 @@ export function GameScreen({
 
     if (prefersReducedMotion() || !canAnimateEntrance()) {
       // Same end state, arrived at instantly.
-      if (digitos) digitos.textContent = formatDuration(elapsedMs)
+      if (digitos) digitos.textContent = formatDuration(decorridoMs)
       return
     }
 
-    const context = gsap.context(() => {
-      const board = boardRef.current?.getBoundingClientRect()
+    const contexto = gsap.context(() => {
+      const board = tabuleiroRef.current?.getBoundingClientRect()
       const bloco = tempoRef.current?.getBoundingClientRect()
 
       /* The time is rendered where it ends up, above the board, and is only
@@ -135,14 +125,14 @@ export function GameScreen({
       linha.to(
         contador,
         {
-          ms: elapsedMs,
+          ms: decorridoMs,
           duration: 1,
           ease: 'power2.out',
           onUpdate: () => {
             if (digitos) digitos.textContent = formatDuration(contador.ms)
           },
           onComplete: () => {
-            if (digitos) digitos.textContent = formatDuration(elapsedMs)
+            if (digitos) digitos.textContent = formatDuration(decorridoMs)
           },
         },
         0.7,
@@ -159,8 +149,8 @@ export function GameScreen({
       linha.from('[data-fim="acoes"]', { opacity: 0, duration: 0.4 }, 2.7)
     }, rootRef)
 
-    return () => context.revert()
-  }, [desfecho, elapsedMs])
+    return () => contexto.revert()
+  }, [desfecho, decorridoMs])
 
   return (
     <div
@@ -179,7 +169,7 @@ export function GameScreen({
             <div
               data-fim="digitos"
               className="relogio relative text-3xl sm:text-4xl"
-              aria-label={`Tempo da partida: ${formatDuration(elapsedMs)}`}
+              aria-label={`Tempo da partida: ${formatDuration(decorridoMs)}`}
             >
               00:00
             </div>
@@ -190,7 +180,7 @@ export function GameScreen({
             aria-live="polite"
             className="text-sm tracking-wide text-acento sm:text-base"
           >
-            {yourTurn ? 'sua vez' : 'pensando'}
+            {suaVez ? 'sua vez' : 'pensando'}
           </p>
         )}
       </div>
@@ -204,35 +194,35 @@ export function GameScreen({
       <div className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-6">
         <div className="hidden min-w-0 md:block" aria-hidden="true" />
 
-        <div ref={boardRef} className="w-full justify-self-center md:w-[min(72vh,40rem)]">
-          <Board
-            pieces={pieces}
-            selected={selected}
-            targets={targets}
-            lastMove={lastMove}
-            interactive={yourTurn && !desfecho}
-            onSquare={onSquare}
-            checkPulse={checkPulse}
-            trayRef={trayRef}
+        <div ref={tabuleiroRef} className="w-full justify-self-center md:w-[min(72vh,40rem)]">
+          <Tabuleiro
+            estado={estado}
+            lancesLegais={lancesLegais}
+            interativo={suaVez && !desfecho}
+            destaques={desfecho?.destaques ?? []}
+            onLance={onLance}
             entranceKey={entranceKey}
-            destaques={desfecho?.destaques}
           />
         </div>
 
         <div className="min-w-0 overflow-x-auto md:justify-self-start">
-          <CapturedTray ref={trayRef} byHuman={capturedByHuman} byEngine={capturedByEngine} />
+          {Lateral ? <Lateral estado={estado} fim={desfecho !== null} /> : null}
         </div>
       </div>
 
       <div className="w-full pt-8 pb-2">
         {desfecho ? (
-          <EndPanel desfecho={desfecho} historico={historico} onRestart={onRestart} />
+          <TelaFim
+            desfecho={desfecho}
+            historico={historico}
+            onOutraPartida={onOutraPartida}
+          />
         ) : (
           /* Leaving is always available, and never made to feel like a failure. */
           <div className="flex justify-center">
             <button
               type="button"
-              onClick={onResign}
+              onClick={onEncerrar}
               className="rounded-sm px-2 py-1 text-xs font-normal text-tinta-fraca transition-colors hover:text-tinta"
             >
               Encerrar partida

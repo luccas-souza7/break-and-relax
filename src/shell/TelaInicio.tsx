@@ -1,21 +1,19 @@
 import { useLayoutEffect, useRef } from 'react'
 
-import { Clock } from '@/components/Clock'
-import { Footer } from '@/components/Footer'
+import { Relogio } from './Relogio'
+import { Rodape } from './Rodape'
 import { Button } from '@/components/ui/button'
 import { canAnimateEntrance, gsap } from '@/anim/motion'
-import { LEVEL_LABELS } from '@/engine/protocol'
-import type { Level } from '@/game/types'
+import { NIVEIS, ROTULOS_NIVEL } from './niveis'
+import type { Nivel } from '@/types'
 
-const LEVELS: Level[] = ['tranquilo', 'normal', 'desafio']
-
-type StartScreenProps = {
-  level: Level
-  onLevelChange: (level: Level) => void
-  onStart: () => void
+type PropsTelaInicio = {
+  nivel: Nivel
+  onNivelChange: (nivel: Nivel) => void
+  onComecar: () => void
 }
 
-export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps) {
+export function TelaInicio({ nivel, onNivelChange, onComecar }: PropsTelaInicio) {
   const rootRef = useRef<HTMLDivElement>(null)
 
   /* One timeline, in the order the eye should travel. */
@@ -46,7 +44,7 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
 
       <div className="flex flex-col items-center">
         <div data-anim="clock" className="mt-12">
-          <Clock />
+          <Relogio />
         </div>
 
         <p data-anim="subtitle" className="mt-6 text-sm text-tinta-fraca sm:text-base">
@@ -58,8 +56,8 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
           aria-label="Nível"
           className="mt-10 flex flex-wrap items-center justify-center gap-2"
         >
-          {LEVELS.map((option) => {
-            const active = option === level
+          {NIVEIS.map((option) => {
+            const active = option === nivel
             return (
               <button
                 key={option}
@@ -67,7 +65,7 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
                 type="button"
                 role="radio"
                 aria-checked={active}
-                onClick={() => onLevelChange(option)}
+                onClick={() => onNivelChange(option)}
                 className={[
                   'rounded-md border px-4 py-2 text-sm transition-colors',
                   active
@@ -75,7 +73,7 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
                     : 'border-transparent text-tinta-fraca hover:text-tinta',
                 ].join(' ')}
               >
-                {LEVEL_LABELS[option]}
+                {ROTULOS_NIVEL[option]}
               </button>
             )
           })}
@@ -83,7 +81,7 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
 
         <div data-anim="start" className="mt-10">
           <Button
-            onClick={onStart}
+            onClick={onComecar}
             className="h-11 rounded-md bg-tinta px-10 text-base font-medium text-superficie hover:bg-tinta/90"
           >
             Começar
@@ -93,7 +91,7 @@ export function StartScreen({ level, onLevelChange, onStart }: StartScreenProps)
 
       <div data-anim="footer" className="w-full max-w-xl">
         <div aria-hidden="true" className="mb-6 h-px w-full bg-border" />
-        <Footer />
+        <Rodape />
       </div>
     </div>
   )

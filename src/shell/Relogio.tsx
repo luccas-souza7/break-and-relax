@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 
-import { formatDuration } from '@/game/time'
+import { formatDuration } from './time'
 
 /**
  * The clock that has no authority.
@@ -10,12 +10,12 @@ import { formatDuration } from '@/game/time'
  * took, once that no longer matters.
  */
 
-type ClockProps = {
+type PropsRelogio = {
   /** Left undefined, the clock shows its idle face. */
   milliseconds?: number
 }
 
-export const Clock = forwardRef<HTMLDivElement, ClockProps>(function Clock(
+export const Relogio = forwardRef<HTMLDivElement, PropsRelogio>(function Relogio(
   { milliseconds },
   ref,
 ) {
