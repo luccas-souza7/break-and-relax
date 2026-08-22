@@ -1,4 +1,12 @@
 import gsap from 'gsap'
+import { Flip } from 'gsap/Flip'
+
+/*
+ * Flip animates a real layout change at its true size. Shrinking the board
+ * with `transform: scale` would look the same for a moment and open no space
+ * at all for the rows underneath, which is the entire point of the move.
+ */
+gsap.registerPlugin(Flip)
 
 /**
  * Motion is one orchestrated sequence, and it is entirely optional.
@@ -34,14 +42,40 @@ export function canAnimateEntrance(): boolean {
   return typeof document === 'undefined' || document.visibilityState === 'visible'
 }
 
-export const DURATION = {
-  clockIn: 0.5,
-  stagger: 0.06,
-  squareStagger: 0.012,
-  move: 0.18,
-  capture: 0.28,
-  checkPulse: 0.45,
-  fade: 0.4,
+/**
+ * The movement vocabulary, in one place.
+ *
+ * The site is a pause. Nothing here is urgent, nothing announces itself, and
+ * nothing overshoots — no `back`, no `elastic`, no `bounce`, no scale above 1.
+ */
+export const DURACAO = {
+  /** Something arriving on screen. */
+  entrada: 0.7,
+  /** Something leaving. */
+  saida: 0.6,
+  /** A real layout change, animated at its true size. */
+  layout: 1.1,
+  /** The clock counting up to the time played. */
+  contagem: 1.8,
+  /** A highlight lighting up. */
+  destaque: 0.6,
+  destaqueStagger: 0.14,
+  /** A piece crossing the board. */
+  lance: 0.22,
+  /** The single pulse on check. */
+  xeque: 0.7,
+  /** A captured piece on its way to the tray. In play, never at the end. */
+  captura: 0.32,
+  /** Board assembly, square by square. */
+  casaStagger: 0.012,
+} as const
+
+export const EASE = {
+  entrada: 'power1.out',
+  saida: 'power1.in',
+  layout: 'power2.inOut',
+  contagem: 'power2.out',
+  xeque: 'sine.inOut',
 } as const
 
 /**
@@ -65,4 +99,4 @@ export function timeline(vars?: gsap.TimelineVars): gsap.core.Timeline {
   return tl
 }
 
-export { gsap }
+export { Flip, gsap }

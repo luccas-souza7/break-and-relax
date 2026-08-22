@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { KeyboardEvent } from 'react'
 import type { PieceSymbol, Square } from 'chess.js'
 
-import { DURATION, canAnimateEntrance, gsap, prefersReducedMotion, tween } from '@/anim/motion'
+import { DURACAO, EASE, canAnimateEntrance, gsap, prefersReducedMotion, tween } from '@/anim/motion'
 import type { PropsTabuleiro } from '@/types'
 import { DialogoPromocao } from './DialogoPromocao'
 import { Peca } from './Peca'
@@ -131,7 +131,7 @@ export function Tabuleiro({
       y: dy,
       scale: 0.6,
       opacity: 0,
-      duration: DURATION.capture,
+      duration: DURACAO.captura,
       ease: 'power2.in',
       onComplete: () => fantasma.remove(),
     })
@@ -150,7 +150,7 @@ export function Tabuleiro({
       if (conhecida === undefined) {
         gsap.set(el, { xPercent: x, yPercent: y, x: 0, y: 0, scale: 1, opacity: 1 })
       } else if (conhecida !== peca.casa) {
-        tween(el, { xPercent: x, yPercent: y, duration: DURATION.move, ease: 'power2.out' })
+        tween(el, { xPercent: x, yPercent: y, duration: DURACAO.lance, ease: 'power2.out' })
       }
       placed.current.set(peca.id, peca.casa)
     }
@@ -175,8 +175,8 @@ export function Tabuleiro({
       { borderColor: 'rgba(158, 59, 78, 0)' },
       {
         borderColor: 'rgba(158, 59, 78, 1)',
-        duration: DURATION.checkPulse / 2,
-        ease: 'power2.out',
+        duration: DURACAO.xeque / 2,
+        ease: EASE.xeque,
         yoyo: true,
         repeat: 1,
       },
@@ -190,9 +190,9 @@ export function Tabuleiro({
     const contexto = gsap.context(() => {
       gsap.from('[data-square]', {
         opacity: 0,
-        duration: 0.22,
-        ease: 'power1.out',
-        stagger: { each: DURATION.squareStagger, from: 'start' },
+        duration: DURACAO.entrada,
+        ease: EASE.entrada,
+        stagger: { each: DURACAO.casaStagger, from: 'start' },
       })
     }, grid)
     return () => contexto.revert()

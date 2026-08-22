@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react'
 
-import { canAnimateEntrance, gsap } from '@/anim/motion'
+import { DURACAO, EASE, Flip, canAnimateEntrance, gsap } from '@/anim/motion'
 import type { Desfecho, JogoQualquer } from '@/types'
 import { TelaFim } from './TelaFim'
 import { formatDuration } from './time'
@@ -50,6 +50,7 @@ export function TelaPartida({
 }: PropsTelaPartida) {
   const rootRef = useRef<HTMLDivElement>(null)
   const tempoRef = useRef<HTMLDivElement>(null)
+  const tabuleiroRef = useRef<HTMLDivElement>(null)
 
   const Tabuleiro = jogo.Tabuleiro
   const Lateral = jogo.Lateral
@@ -69,12 +70,127 @@ export function TelaPartida({
     return () => contexto.revert()
   }, [entranceKey])
 
-  /* Until the closing timeline lands, the clock shows the real time straight
-     away so the static layout can be checked on its own. */
+  /*
+   * Flip needs the geometry from before the layout changed, and by the time an
+   * effect runs React has already applied it. So the board's state is captured
+   * on every playing render — it only ever changes when the end rows appear,
+   * so any of those captures is the right "before".
+   */
+  const estadoFlip = useRef<ReturnType<typeof Flip.getState> | null>(null)
+  useLayoutEffect(() => {
+    if (desfecho || !tabuleiroRef.current) return
+    estadoFlip.current = Flip.getState(tabuleiroRef.current)
+  })
+
+  /*
+   * The closing sequence: one timeline, and a slow one on purpose. This is the
+   * quietest moment of the site — nothing here is a result screen.
+   */
   useLayoutEffect(() => {
     if (!desfecho) return
     const digitos = tempoRef.current?.querySelector<HTMLElement>('[data-fim="digitos"]')
-    if (digitos) digitos.textContent = formatDuration(decorridoMs)
+
+    if (!canAnimateEntrance()) {
+      // Same end state, arrived at instantly.
+      if (digitos) digitos.textContent = formatDuration(decorridoMs)
+      return
+    }
+
+    const contexto = gsap.context(() => {
+      const linha = gsap.timeline()
+
+      linha.from(
+        '[data-fim="vez-saindo"]',
+        { opacity: 1, duration: DURACAO.saida, ease: EASE.saida },
+        0,
+      )
+
+      linha.from(
+        '[data-destaque]',
+        {
+          opacity: 0,
+          duration: DURACAO.destaque,
+          ease: EASE.entrada,
+          stagger: DURACAO.destaqueStagger,
+        },
+        0.2,
+      )
+
+      /* The rows below already occupy their real space; this animates the
+         board from the size it had to the size it now has. */
+      if (estadoFlip.current && tabuleiroRef.current) {
+        linha.add(
+          Flip.from(estadoFlip.current, {
+            duration: DURACAO.layout,
+            ease: EASE.layout,
+          }),
+          0.5,
+        )
+      }
+
+      /*
+       * The clock waits for the board to finish shrinking rather than arriving
+       * at 1.1s as first drawn. Flip animates from the board's old, larger box,
+       * which reaches up through this very slot on its way down — fading the
+       * clock in during that would put the two on top of each other, and the
+       * clock covering the board is exactly what this screen must never do.
+       */
+      linha.from(
+        tempoRef.current,
+        { opacity: 0, y: 6, duration: DURACAO.entrada, ease: EASE.entrada },
+        1.6,
+      )
+
+      /* Counted on a proxy in whole seconds, so the minutes only tick when the
+         seconds roll over, and the last frame lands on the real value. */
+      const contador = { ms: 0 }
+      linha.to(
+        contador,
+        {
+          ms: decorridoMs,
+          duration: DURACAO.contagem,
+          ease: EASE.contagem,
+          onUpdate: () => {
+            if (digitos) digitos.textContent = formatDuration(contador.ms)
+          },
+          onComplete: () => {
+            if (digitos) digitos.textContent = formatDuration(decorridoMs)
+          },
+        },
+        1.9,
+      )
+
+      linha.from(
+        '[data-fim="cartao"]',
+        { opacity: 0, y: 8, duration: 0.8, ease: EASE.entrada },
+        2.4,
+      )
+
+      /* Plain opacity, never autoAlpha: the button must answer a click from the
+         moment its fade starts, not once the timeline finishes. */
+      linha.set('[data-fim="acoes"]', { pointerEvents: 'none' }, 0)
+      linha.from(
+        ['[data-fim="acoes"]', '[data-fim="rodape"]'],
+        { opacity: 0, y: 8, duration: 0.8, ease: EASE.entrada },
+        2.9,
+      )
+      linha.set('[data-fim="acoes"]', { pointerEvents: 'auto' }, 2.9)
+
+      /* Nobody should have to sit through it. */
+      const pular = () => linha.progress(1)
+      const aoTeclar = (evento: KeyboardEvent) => {
+        if (evento.key === 'Escape') pular()
+      }
+      const raiz = rootRef.current
+      raiz?.addEventListener('click', pular)
+      window.addEventListener('keydown', aoTeclar)
+      linha.eventCallback('onComplete', () => {
+        raiz?.removeEventListener('click', pular)
+        window.removeEventListener('keydown', aoTeclar)
+      })
+    }, rootRef)
+
+    return () => contexto.revert()
   }, [desfecho, decorridoMs])
 
   return (
@@ -83,7 +199,18 @@ export function TelaPartida({
       className="tela-partida grid h-full grid-rows-[auto_minmax(240px,1fr)] gap-[clamp(8px,2dvh,20px)] px-3 py-[clamp(8px,2dvh,20px)] sm:px-6"
     >
       {/* One slot, two tenants: whose turn it is, or the time once it is over. */}
-      <div className="flex min-h-8 items-center justify-center">
+      <div className="relative flex min-h-8 items-center justify-center">
+        {/* Rests at zero, so with motion off it is simply absent; the timeline
+            reveals it only to fade it out. */}
+        {desfecho && (
+          <p
+            data-fim="vez-saindo"
+            aria-hidden="true"
+            className="absolute text-sm tracking-wide text-acento opacity-0 sm:text-base"
+          >
+            {suaVez ? 'sua vez' : 'pensando'}
+          </p>
+        )}
         {desfecho ? (
           <div ref={tempoRef}>
             <div
@@ -132,6 +259,7 @@ export function TelaPartida({
           and 11rem is the room the two side columns need.
         */}
         <div
+          ref={tabuleiroRef}
           data-centro
           className="mx-auto aspect-square h-full max-w-full justify-self-center md:h-auto md:w-[min(100cqh,calc(100cqw-11rem))] md:self-center"
         >

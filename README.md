@@ -14,11 +14,30 @@ https://luccas-souza7.github.io/break-and-relax/
 
 ## Quem perdeu precisa entender por quê
 
-A tela de fim é o oposto de um "você perdeu". O tabuleiro **fica exatamente onde estava, em 100% de opacidade**, as casas que decidiram a partida acendem, e a explicação aparece embaixo — com as casas e as peças reais, nunca um texto genérico.
+A tela de fim é o oposto de um "você perdeu". O tabuleiro continua ali, **em 100% de opacidade** — apenas menor, para abrir espaço às linhas que entram embaixo dele. As casas que decidiram a partida acendem, e a explicação vem com as casas e as peças reais, nunca um texto genérico.
 
 ![Tela de fim, com o mate destacado](docs/tela-fim.png)
 
 Três tipos de destaque: **decisivo** (vinho) responde "por que acabou"; **atacante** (azul) é quem executou; **bloqueado** (hachurado) são as casas para onde o rei não podia ir — é isso que faz um mate ou um afogamento fazer sentido de olhar.
+
+O relógio volta ao slot dele, acima do tabuleiro, e conta de `00:00` até o tempo jogado sem sair do lugar nem mudar de tamanho. Um clique em qualquer lugar, ou `Esc`, pula a sequência inteira: ninguém é obrigado a assistir.
+
+## Nenhuma tela rola
+
+Início, partida e fim cabem na viewport. Não por `overflow: hidden`, que corta, mas por um layout que cresce sozinho quando a compressão se esgota:
+
+```css
+.app {
+  height: 100dvh;          /* faz o grid de linhas funcionar */
+  min-height: min-content; /* cresce quando não couber mais */
+  overflow-y: auto;        /* válvula: só aparece se realmente passou */
+  overflow-x: clip;        /* horizontal nunca rola */
+}
+```
+
+As telas são grids de linhas com o tabuleiro em `minmax(240px, 1fr)`: ele recebe a altura que sobra e nunca empurra ninguém, então as três linhas a mais da tela de fim o encolhem por si só — sem JavaScript medindo nada e sem `transform: scale`, que não abriria espaço de verdade. 240px é o piso de legibilidade, e é ele que o `min-content` soma para decidir que a página realmente ficou sem espaço.
+
+Isso importa para acessibilidade: com zoom de 400% o conteúdo continua alcançável, rolando na vertical se precisar. Rolagem horizontal nunca aparece — essa é a que o WCAG proíbe.
 
 ## Stack
 

@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { canAnimateEntrance, gsap } from '@/anim/motion'
+import { DURACAO, EASE, canAnimateEntrance, gsap } from '@/anim/motion'
 import type { IdJogo, Nivel } from '@/types'
 import { Relogio } from './Relogio'
 import { Rodape } from './Rodape'
@@ -61,15 +61,17 @@ export function TelaInicio({
   useLayoutEffect(() => {
     if (!canAnimateEntrance()) return
     const contexto = gsap.context(() => {
-      const linha = gsap.timeline({ defaults: { ease: 'power2.out' } })
+      const linha = gsap.timeline({
+        defaults: { ease: EASE.entrada, duration: DURACAO.entrada },
+      })
       linha
-        .from('[data-anim="clock"]', { opacity: 0, y: 12, duration: 0.5 })
-        .from('[data-anim="subtitle"]', { opacity: 0, y: 8, duration: 0.35 }, '-=0.2')
-        .from('[data-anim="game"]', { opacity: 0, y: 8, duration: 0.3, stagger: 0.06 }, '-=0.15')
-        .from('[data-anim="level"]', { opacity: 0, y: 8, duration: 0.3, stagger: 0.06 }, '-=0.1')
-        .from('[data-anim="start"]', { opacity: 0, y: 8, duration: 0.3 }, '-=0.05')
-        .from('[data-anim="qualquer"]', { opacity: 0, duration: 0.3 }, '-=0.05')
-        .from('[data-anim="footer"]', { opacity: 0, duration: 0.35 }, '-=0.1')
+        .from('[data-anim="clock"]', { opacity: 0, y: 8 })
+        .from('[data-anim="subtitle"]', { opacity: 0, y: 6 }, '-=0.45')
+        .from('[data-anim="game"]', { opacity: 0, y: 6, stagger: 0.08 }, '-=0.4')
+        .from('[data-anim="level"]', { opacity: 0, y: 6, stagger: 0.08 }, '-=0.4')
+        .from('[data-anim="start"]', { opacity: 0, y: 6 }, '-=0.35')
+        .from('[data-anim="qualquer"]', { opacity: 0 }, '-=0.35')
+        .from('[data-anim="footer"]', { opacity: 0 }, '-=0.35')
     }, rootRef)
     return () => contexto.revert()
   }, [])

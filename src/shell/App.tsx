@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { gsap, prefersReducedMotion } from '@/anim/motion'
+import { DURACAO, EASE, gsap, prefersReducedMotion } from '@/anim/motion'
 import type { Desfecho, IdJogo, JogoQualquer, Nivel } from '@/types'
 import { TelaInicio } from './TelaInicio'
 import { useMaquina } from './useMaquina'
@@ -12,13 +12,13 @@ import { TelaPartida } from './TelaPartida'
  * The shell keeps time, drives the machine and writes the ending on screen
  * without knowing which game is being played: everything it needs arrives
  * through the `Jogo` contract. The end of a game is not a third screen — the
- * board stays mounted exactly where it was and the reason is written
- * underneath.
+ * board stays mounted, gives up the height the explanation needs, and the
+ * reason is written underneath it.
  */
 
 /**
  * Loaded on demand: opening the site does not download a game until it is
- * chosen. All three are here.
+ * chosen.
  */
 const CARREGADORES: Partial<Record<IdJogo, () => Promise<{ default: JogoQualquer }>>> = {
   xadrez: () => import('@/games/xadrez'),
@@ -56,12 +56,12 @@ export default function App() {
       executar()
       return
     }
-    gsap.to(palco, { opacity: 0, duration: 0.28, ease: 'power2.in' })
+    gsap.to(palco, { opacity: 0, duration: DURACAO.saida, ease: EASE.saida })
     window.setTimeout(() => {
       executar()
       gsap.killTweensOf(palco)
       gsap.set(palco, { opacity: 1 })
-    }, 280)
+    }, DURACAO.saida * 1000)
   }, [])
 
   /*
