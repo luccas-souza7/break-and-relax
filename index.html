@@ -18,11 +18,10 @@
     <!--
       This file is the development entry: it loads TypeScript source through
       the dev server. Opened straight off the disk it can only ever be blank,
-      and a blank page explains nothing. The built site does open from disk —
-      it is dist/index.html — so say that instead of showing nothing.
+      and a blank page explains nothing — so say what to run instead.
 
-      Guarded twice: only on file://, and only if nothing ever mounted. In the
-      build, and on any http(s) deploy, this never appears.
+      Guarded twice: only on file://, and only if nothing ever mounted. It is
+      stripped from the build, and never appears on an http(s) deploy.
     -->
     <script>
       window.addEventListener('load', function () {
@@ -38,8 +37,8 @@
           '<p style="letter-spacing:.2em;font-size:13px">BREAK AND RELAX</p>' +
           '<p style="margin-top:2rem">Este arquivo é o ponto de entrada de desenvolvimento e ' +
           'precisa do servidor do Vite.</p>' +
-          '<p style="color:#656B62">Para jogar sem servidor, rode <code>npm run build</code> e ' +
-          'abra <code>dist/index.html</code>. Para desenvolver, rode <code>npm run dev</code>.</p>'
+          '<p style="color:#656B62">Para desenvolver, rode <code>npm run dev</code>. ' +
+          'Para conferir a build, rode <code>npm run preview</code>.</p>'
       })
     </script>
     <!-- dev-entry-notice:end -->

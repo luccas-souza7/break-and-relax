@@ -2,79 +2,46 @@ import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
-/*
- * The build has to survive being opened straight off the disk, by double
- * clicking dist/index.html, as well as being served from a subpath on GitHub
- * Pages. Three things are needed for that, and all three are needed together:
- *
- *   base: './'   — relative asset URLs. An absolute base resolves against the
- *                  filesystem root under file:// and against the domain root
- *                  anywhere that is not the expected subpath. Relative works
- *                  in every case, GitHub Pages included.
- *   iife output  — a classic script. Browsers refuse `<script type="module">`
- *                  over file:// ("blocked by CORS policy: ... origin 'null'"),
- *                  so a module build can only ever show a blank page there.
- *   iife worker  — matching format for the engine worker, which is inlined at
- *                  its import site so there is no second file to fetch.
+/**
+ * The index.html at the repo root is the development entry and carries a note
+ * for anyone who opens it straight off the disk. The build has no use for it.
  */
-/*
- * Vite marks the entry `type="module"` whatever format Rollup produced. The
- * bundle below is an IIFE, so the attribute is not only unnecessary, it is
- * the one thing that keeps the page from running off the disk. `crossorigin`
- * goes with it: it triggers a CORS check that a file:// page cannot pass.
- *
- * `defer` replaces both. A module script is deferred implicitly; a classic
- * one is not, and this script sits in the head — without it React looks for
- * #root before the body has been parsed.
- */
-function classicEntryScript() {
+function stripDevEntryNotice() {
   return {
-    name: 'classic-entry-script',
+    name: 'strip-dev-entry-notice',
     transformIndexHtml(html: string) {
-      return html
-        .replace(/<script\s+type="module"\s+crossorigin\s+/g, '<script defer ')
-        .replace(/<link\s+rel="stylesheet"\s+crossorigin\s+/g, '<link rel="stylesheet" ')
-        /*
-         * The dev entry carries a note for anyone who opens it off the disk
-         * and gets a blank page. The build has no use for it — there it would
-         * only ever fire to tell the reader to open the file they already
-         * have open.
-         */
-        .replace(
-          /[ \t]*<!-- dev-entry-notice:start -->[\s\S]*?<!-- dev-entry-notice:end -->\n?/,
-          '',
-        )
+      return html.replace(
+        /[ \t]*<!-- dev-entry-notice:start -->[\s\S]*?<!-- dev-entry-notice:end -->\n?/,
+        '',
+      )
     },
   }
 }
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
-  plugins: [react(), tailwindcss(), classicEntryScript()],
+  base: '/break-and-relax/',
+  plugins: [
+    react(),
+    tailwindcss(),
+    stripDevEntryNotice(),
+    /*
+     * Offline after the first visit, and nothing else: no manifest, no install
+     * prompt, no update banner. Just a precache, so a dropped connection never
+     * interrupts a break. The default glob covers js/css/html only — the fonts
+     * and the pieces have to be named or they would be fetched over the wire.
+     */
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: false,
+      workbox: { globPatterns: ['**/*.{js,css,html,svg,woff2}'] },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
-    },
-  },
-  worker: {
-    format: 'iife',
-  },
-  build: {
-    /*
-     * Keep the stylesheet a real file. A non-ES output otherwise gets its CSS
-     * injected by JavaScript, which pushes first paint behind the whole
-     * bundle — measured as a 15-point Lighthouse performance drop. A plain
-     * <link> is not subject to the module CORS rule, so it loads off the disk
-     * just as happily.
-     */
-    cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        format: 'iife',
-        inlineDynamicImports: true,
-      },
     },
   },
 })
