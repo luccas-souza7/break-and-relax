@@ -6,7 +6,31 @@ export type Level = 'tranquilo' | 'normal' | 'desafio'
 /** How the single game ended. There is no fifth possibility. */
 export type Outcome = 'vitoria' | 'derrota' | 'empate' | 'encerrada'
 
-export type Screen = 'inicio' | 'partida' | 'fim'
+/**
+ * A square worth looking at once the game is over.
+ *
+ * `decisivo`  — answers "why did it end": the mated king, the stalemated king.
+ * `atacante`  — the pieces that carried the ending out.
+ * `bloqueado` — where the king could not go. This is the one that makes a
+ *               stalemate or a mate make sense to someone staring at it.
+ */
+export type Destaque = {
+  chave: string
+  tipo: 'decisivo' | 'atacante' | 'bloqueado'
+}
+
+/**
+ * How the game ended, in words the loser can read.
+ *
+ * The shell renders this and knows nothing about chess: the title, the
+ * sentence and the squares to light up all arrive ready.
+ */
+export type Desfecho = {
+  resultado: Outcome
+  titulo: string
+  explicacao: string
+  destaques: Destaque[]
+}
 
 /**
  * A piece with a stable identity across the whole game.

@@ -2,8 +2,9 @@ import { useCallback, useRef, useState } from 'react'
 import { Chess } from 'chess.js'
 import type { Color, Move, PieceSymbol, Square } from 'chess.js'
 
+import { ENCERRADA, avaliarFim } from './outcome'
 import { applyMove, readPieces } from './pieceTracker'
-import type { CapturedPiece, Outcome, PieceView } from './types'
+import type { CapturedPiece, Desfecho, PieceView } from './types'
 
 /** The user is always White. That decision is not exposed anywhere. */
 export const HUMAN: Color = 'w'
@@ -18,7 +19,9 @@ type GameSnapshot = {
   capturedByHuman: CapturedPiece[]
   capturedByEngine: CapturedPiece[]
   checkPulse: number
-  outcome: Outcome | null
+  desfecho: Desfecho | null
+  /** Readable notation, for the strip of last moves on the end screen. */
+  historico: string[]
   elapsedMs: number
 }
 
@@ -32,20 +35,10 @@ function initialSnapshot(chess: Chess): GameSnapshot {
     capturedByHuman: [],
     capturedByEngine: [],
     checkPulse: 0,
-    outcome: null,
+    desfecho: null,
+    historico: [],
     elapsedMs: 0,
   }
-}
-
-/**
- * Reads the outcome from the position. The rules all come from chess.js:
- * checkmate, stalemate, threefold repetition, the fifty-move rule and
- * insufficient material are never re-implemented here.
- */
-function outcomeOf(chess: Chess): Outcome | null {
-  if (chess.isCheckmate()) return chess.turn() === HUMAN ? 'derrota' : 'vitoria'
-  if (chess.isGameOver()) return 'empate'
-  return null
 }
 
 export function useChessGame() {
@@ -90,7 +83,8 @@ export function useChessGame() {
             ? [...current.capturedByEngine, captured]
             : current.capturedByEngine,
         checkPulse: chess.inCheck() ? current.checkPulse + 1 : current.checkPulse,
-        outcome: outcomeOf(chess),
+        desfecho: avaliarFim(chess),
+        historico: chess.history(),
         elapsedMs: current.elapsedMs,
       }
     })
@@ -176,11 +170,11 @@ export function useChessGame() {
       /* A game that already ended keeps how it ended. The end screen takes a
          moment to arrive, and a click landing in that gap must not rewrite a
          checkmate into "Encerrada". */
-      current.outcome
+      current.desfecho
         ? current
         : {
             ...current,
-            outcome: 'encerrada',
+            desfecho: ENCERRADA,
             elapsedMs: startedAt.current === null ? 0 : performance.now() - startedAt.current,
           },
     )

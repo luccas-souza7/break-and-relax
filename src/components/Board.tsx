@@ -6,7 +6,7 @@ import { Piece } from '@/components/Piece'
 import { DURATION, canAnimateEntrance, gsap, prefersReducedMotion, tween } from '@/anim/motion'
 import { FILES, RANKS, colOf, isLightSquare, rowOf, squareAt } from '@/game/board'
 import { PIECE_SVG, describeSquare } from '@/game/pieces'
-import type { PieceView } from '@/game/types'
+import type { Destaque, PieceView } from '@/game/types'
 
 type BoardProps = {
   pieces: PieceView[]
@@ -22,6 +22,8 @@ type BoardProps = {
   trayRef?: RefObject<HTMLElement | null>
   /** Changes when a new game starts, to stagger the squares back in. */
   entranceKey: number
+  /** Squares worth looking at once the game is over. Empty while playing. */
+  destaques?: Destaque[]
 }
 
 export function Board({
@@ -34,6 +36,7 @@ export function Board({
   checkPulse,
   trayRef,
   entranceKey,
+  destaques,
 }: BoardProps) {
   const frameRef = useRef<HTMLDivElement>(null)
   const pulseRef = useRef<HTMLDivElement>(null)
@@ -184,6 +187,11 @@ export function Board({
     [pieces],
   )
 
+  const realce = useMemo(
+    () => new Map((destaques ?? []).map((d) => [d.chave, d.tipo])),
+    [destaques],
+  )
+
   return (
     // container-type is what makes `cqw` resolve: the coordinates size
     // against the board's own width, not the viewport's.
@@ -241,6 +249,29 @@ export function Board({
                     <span
                       aria-hidden="true"
                       className="absolute inset-[7%] rounded-full border-4 border-acento/55"
+                    />
+                  )}
+
+                  {realce.has(square) && (
+                    <span
+                      data-destaque={realce.get(square)}
+                      aria-hidden="true"
+                      className={[
+                        'pointer-events-none absolute inset-0',
+                        realce.get(square) === 'decisivo'
+                          ? 'border-2 border-alerta bg-alerta/35'
+                          : realce.get(square) === 'atacante'
+                            ? 'border-2 border-acento'
+                            : 'bg-tinta-fraca/20',
+                      ].join(' ')}
+                      style={
+                        realce.get(square) === 'bloqueado'
+                          ? {
+                              backgroundImage:
+                                'repeating-linear-gradient(45deg, var(--tinta-fraca) 0 1px, transparent 1px 6px)',
+                            }
+                          : undefined
+                      }
                     />
                   )}
 

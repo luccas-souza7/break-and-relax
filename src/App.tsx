@@ -1,22 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { PromotionDialog } from '@/components/PromotionDialog'
-import { EndScreen } from '@/screens/EndScreen'
 import { GameScreen } from '@/screens/GameScreen'
 import { StartScreen } from '@/screens/StartScreen'
 import { gsap, prefersReducedMotion } from '@/anim/motion'
 import { useEngine } from '@/engine/useEngine'
 import { ENGINE, HUMAN, useChessGame } from '@/game/useChessGame'
-import type { Level, Screen } from '@/game/types'
+import type { Level } from '@/game/types'
 
 /**
- * Three screens, one page, no router.
+ * Two screens, one page, no router.
  *
- * The product ends when the game ends. Nothing here counts down, warns, or
- * asks for another game.
+ * The end of a game is not a third screen: the board stays mounted exactly
+ * where it was and the reason it ended is written underneath. The product
+ * ends when the game ends — nothing here counts down, warns, or asks for
+ * another game.
  */
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('inicio')
+  const [emPartida, setEmPartida] = useState(false)
   const [level, setLevel] = useState<Level>('normal')
   const [entranceKey, setEntranceKey] = useState(0)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -35,36 +36,25 @@ export default function App() {
    * GSAP runs on requestAnimationFrame, which stops in a hidden tab — if the
    * state change hung off onComplete, stepping away mid-transition would
    * leave the page stranded on a faded screen until the visitor came back.
-   * The tween is decoration; the state moves on its own.
    */
-  const leave = useCallback((run: () => void, viaDim = false) => {
+  const leave = useCallback((run: () => void) => {
     const stage = stageRef.current
     if (prefersReducedMotion() || !stage) {
       run()
       return
     }
-
-    if (viaDim) {
-      // The board settles to 40% first, then hands the screen back to the clock.
-      gsap
-        .timeline()
-        .to(stage, { opacity: 0.4, duration: 0.35, ease: 'power2.out' })
-        .to(stage, { opacity: 0, duration: 0.25, ease: 'power2.in' }, '+=0.15')
-    } else {
-      gsap.to(stage, { opacity: 0, duration: 0.28, ease: 'power2.in' })
-    }
-
+    gsap.to(stage, { opacity: 0, duration: 0.28, ease: 'power2.in' })
     window.setTimeout(() => {
       run()
       gsap.killTweensOf(stage)
       gsap.set(stage, { opacity: 1 })
-    }, viaDim ? 750 : 280)
+    }, 280)
   }, [])
 
   /* The machine's turn. The search runs in a worker, so this never blocks. */
   const askedFor = useRef<string | null>(null)
   useEffect(() => {
-    if (screen !== 'partida' || game.outcome || game.turn !== ENGINE) return
+    if (!emPartida || game.desfecho || game.turn !== ENGINE) return
 
     const fen = game.chess.current.fen()
     if (askedFor.current === fen) return
@@ -82,20 +72,19 @@ export default function App() {
       cancelled = true
       askedFor.current = null
     }
-  }, [screen, game.turn, game.outcome, game.chess, think, level, play])
+  }, [emPartida, game.turn, game.desfecho, game.chess, think, level, play])
 
-  /* The game is over the moment the position says so. */
+  /* The game is over the moment the position says so. Nothing moves. */
   useEffect(() => {
-    if (!game.outcome || screen !== 'partida') return
+    if (!game.desfecho) return
     sealElapsed()
     forget()
-    leave(() => setScreen('fim'), true)
-  }, [game.outcome, screen, sealElapsed, forget, leave])
+  }, [game.desfecho, sealElapsed, forget])
 
   const handleStart = useCallback(() => {
     leave(() => {
       setEntranceKey((key) => key + 1)
-      setScreen('partida')
+      setEmPartida(true)
     })
   }, [leave])
 
@@ -104,17 +93,13 @@ export default function App() {
       askedFor.current = null
       game.reset()
       setEntranceKey((key) => key + 1)
-      setScreen('inicio')
+      setEmPartida(false)
     })
   }, [game, leave])
 
   return (
     <div ref={stageRef}>
-      {screen === 'inicio' && (
-        <StartScreen level={level} onLevelChange={setLevel} onStart={handleStart} />
-      )}
-
-      {screen === 'partida' && (
+      {emPartida ? (
         <GameScreen
           pieces={game.pieces}
           selected={game.selected}
@@ -126,19 +111,17 @@ export default function App() {
           /* The machine's turn starts the moment the user moves, not when the
              worker gets around to answering — otherwise the indicator says
              "sua vez" for a beat while the board is not actually yours. */
-          yourTurn={!game.outcome && game.turn === HUMAN && !thinking}
+          yourTurn={!game.desfecho && game.turn === HUMAN && !thinking}
           onSquare={game.selectSquare}
           onResign={game.resign}
           entranceKey={entranceKey}
-        />
-      )}
-
-      {screen === 'fim' && game.outcome && (
-        <EndScreen
-          outcome={game.outcome}
+          desfecho={game.desfecho}
           elapsedMs={game.elapsedMs}
+          historico={game.historico}
           onRestart={handleRestart}
         />
+      ) : (
+        <StartScreen level={level} onLevelChange={setLevel} onStart={handleStart} />
       )}
 
       <PromotionDialog
