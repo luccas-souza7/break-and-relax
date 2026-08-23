@@ -5,11 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Uma partida de xadrez contra a máquina. Sem cadastro, sem cronômetro, sem pressa."
+      content="Uma pausa de verdade: uma partida contra a máquina, sem cadastro e sem relógio correndo."
     />
     <meta name="theme-color" content="#E8EBE3" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Break And Relax</title>
+
+    <!--
+      Preview do link compartilhado. Duas exigencias de quem lê estas tags, e as
+      duas contrariam o resto do arquivo, que usa caminho relativo por causa do
+      base /break-and-relax/:
+
+      1. A URL da imagem precisa ser absoluta. O WhatsApp, o Facebook e afins
+         buscam a imagem de fora, sem a pagina por perto para resolver caminho
+         relativo, entao um ./og.png simplesmente nao seria buscado.
+      2. A imagem precisa ser PNG. O favicon deste site e SVG, que o WhatsApp
+         nao rasteriza em preview. Por isso existe o og.png, gerado do mesmo
+         cavalo por npm run og.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Break And Relax" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="Break And Relax" />
+    <meta
+      property="og:description"
+      content="Uma pausa de verdade: uma partida contra a máquina, sem cadastro e sem relógio correndo."
+    />
+    <meta property="og:url" content="https://luccas-souza7.github.io/break-and-relax/" />
+    <meta property="og:image" content="https://luccas-souza7.github.io/break-and-relax/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Um cavalo de xadrez ao lado do nome Break And Relax."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "screenshots": "node scripts/screenshots.mjs",
+    "og": "node scripts/og.mjs",
     "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {

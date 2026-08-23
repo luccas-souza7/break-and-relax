@@ -304,6 +304,18 @@ Ele roda contra `npm run dev` de propósito: os hooks determinísticos de
 `src/dev/testHooks.ts` só existem em desenvolvimento e desaparecem da build de
 produção.
 
+Para regerar a imagem que aparece quando o link é compartilhado:
+
+```bash
+npm run og
+```
+
+O cartão é montado com as fontes e as cores do próprio site, e o cavalo sai de
+`public/favicon.svg`, o mesmo arquivo que a guia do navegador mostra. O
+`public/og.png` resultante é versionado de propósito: o deploy roda apenas
+`npm ci` e `npm run build`, nunca o Playwright, então a imagem precisa já estar
+no repositório.
+
 ## Estrutura do projeto
 
 ```
@@ -318,6 +330,7 @@ src/
   types.ts        o contrato entre a casca e um jogo
 scripts/
   screenshots.mjs gera docs/img/ inteiro
+  og.mjs          gera public/og.png, o cartao do compartilhamento
 docs/
   evidencia.md    o aprofundamento científico e normativo
   img/            prints e GIF, todos gerados por script

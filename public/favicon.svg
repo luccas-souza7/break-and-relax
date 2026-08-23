@@ -1,7 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#E8EBE3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3.5 4.5 37 37">
+  <!--
+    O cavalo vem da propria peca do jogo, src/assets/pieces/wN.svg: os mesmos
+    dois contornos, preenchidos solidos e sem stroke. O traco de 1.5 existe para
+    a peca sobre a casa do tabuleiro e vira borrao a 16 pixels, entao na guia
+    vale so a silhueta.
+
+    Os paths entram sem reescala, nas coordenadas originais da peca. Quem enquadra
+    e o viewBox: o desenho ocupa 32 unidades dentro das 45 da peca, o que sobra
+    margem demais para um icone, entao a janela fecha em 37 com o desenho no meio.
+
+    Olho e narina ficam vazados na cor do fundo. A 16 pixels somem, o que nao
+    atrapalha, e no cartao de compartilhamento, que reusa este arquivo ampliado,
+    sao eles que tiram a silhueta de cara de mancha.
+  -->
+  <rect width="45" height="45" fill="#E8EBE3"/>
   <g fill="#1B211C">
-    <circle cx="16" cy="9.4" r="4.3"/>
-    <path d="M12.3 12.8h7.4c.9.9 1.4 2 1.4 3.3 0 2.4-1.3 4.6-2.5 6.1h1.4l2.2 4.9H9.8l2.2-4.9h1.4c-1.2-1.5-2.5-3.7-2.5-6.1 0-1.3.5-2.4 1.4-3.3Z"/>
+    <path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/>
+    <path d="M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3"/>
   </g>
+  <path fill="#E8EBE3" d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 1 1 1 0m5.433-9.75a.5 1.5 30 1 1-.866-.5.5 1.5 30 1 1 .866.5"/>
 </svg>
