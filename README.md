@@ -316,6 +316,16 @@ O cartão é montado com as fontes e as cores do próprio site, e o cavalo sai d
 `npm ci` e `npm run build`, nunca o Playwright, então a imagem precisa já estar
 no repositório.
 
+Para regerar os avisos de licença das dependências:
+
+```bash
+npm run notices
+```
+
+Rode depois de mexer nas dependências de produção. Ele percorre o fecho
+transitivo de `dependencies` e reescreve `public/THIRD-PARTY-NOTICES.txt`, que
+também é versionado, pelo mesmo motivo do `og.png`.
+
 ## Estrutura do projeto
 
 ```
@@ -331,6 +341,7 @@ src/
 scripts/
   screenshots.mjs gera docs/img/ inteiro
   og.mjs          gera public/og.png, o cartao do compartilhamento
+  notices.mjs     gera os avisos de licenca dos pacotes de producao
 docs/
   evidencia.md    o aprofundamento científico e normativo
   img/            prints e GIF, todos gerados por script
@@ -361,6 +372,16 @@ usado pelo Lichess.
 
 As peças de damas são desenhadas em SVG e CSS na paleta do projeto.
 
+O cavalo que serve de logo, em `public/favicon.svg` e no cartão de
+compartilhamento, é **desenho próprio**, feito para este projeto. Ele não deriva
+das peças Cburnett de propósito: CC BY-SA é uma licença com *share-alike*, e um
+logo derivado delas teria de sair sob a mesma licença, o que deixaria a marca do
+site livre para qualquer um reusar e modificar.
+
+As fontes são Bricolage Grotesque, Public Sans e Martian Mono, todas sob
+[OFL 1.1](https://openfontlicense.org/), e a animação usa
+[GSAP](https://gsap.com/standard-license), sob a licença padrão sem custo.
+
 ## Licença
 
 MIT, veja [LICENSE](LICENSE).
@@ -368,6 +389,10 @@ MIT, veja [LICENSE](LICENSE).
 A licença MIT cobre o **código** deste repositório. As peças Cburnett são
 **assets de terceiros** e seguem a licença própria delas, CC BY-SA 3.0, como
 indicado acima.
+
+Os avisos de copyright de tudo que é redistribuído com a build estão em
+[`public/THIRD-PARTY-NOTICES.txt`](public/THIRD-PARTY-NOTICES.txt), gerado por
+`npm run notices` e servido junto com o site.
 
 ## Contato
 
