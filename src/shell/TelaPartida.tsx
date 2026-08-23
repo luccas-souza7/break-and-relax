@@ -176,18 +176,16 @@ export function TelaPartida({
       )
       linha.set('[data-fim="acoes"]', { pointerEvents: 'auto' }, 2.9)
 
-      /* Nobody should have to sit through it. */
-      const pular = () => linha.progress(1)
-      const aoTeclar = (evento: KeyboardEvent) => {
-        if (evento.key === 'Escape') pular()
-      }
-      const raiz = rootRef.current
-      raiz?.addEventListener('click', pular)
-      window.addEventListener('keydown', aoTeclar)
-      linha.eventCallback('onComplete', () => {
-        raiz?.removeEventListener('click', pular)
-        window.removeEventListener('keydown', aoTeclar)
-      })
+      /*
+       * Nothing skips this. A click used to jump the timeline to the end, and
+       * the move that finishes a game is itself a click, so the sequence was
+       * being burnt by the tap that came right after it, which is the opposite
+       * of a pause.
+       *
+       * Nobody is trapped by that. `canAnimateEntrance` is false under
+       * `prefers-reduced-motion`, and the branch above already lands on the end
+       * state with no timeline at all.
+       */
     }, rootRef)
 
     return () => contexto.revert()
@@ -257,11 +255,20 @@ export function TelaPartida({
           board came out 888px wide inside a 768px viewport. Container query
           units break the loop: 100cqh and 100cqw read the row, not the track,
           and 11rem is the room the two side columns need.
+
+          Centring, because those two rules settle the width and leave the
+          height alone. On a phone the width is what binds, so this box keeps
+          the full height of the row while the board inside it is only as tall
+          as it is wide, and it used to draw at the top with the leftover height
+          empty below: 323px of nothing on a 390x844 screen. The board is the
+          screen, so it sits in the middle of whatever room it was given. In the
+          other two layouts this box is already square and centring changes
+          nothing.
         */}
         <div
           ref={tabuleiroRef}
           data-centro
-          className="mx-auto aspect-square h-full max-w-full justify-self-center md:h-auto md:w-[min(100cqh,calc(100cqw-11rem))] md:self-center"
+          className="mx-auto flex aspect-square h-full max-w-full items-center justify-center justify-self-center md:h-auto md:w-[min(100cqh,calc(100cqw-11rem))] md:self-center"
         >
           <Tabuleiro
             estado={estado}
