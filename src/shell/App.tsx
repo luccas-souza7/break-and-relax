@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { DURACAO, EASE, gsap, prefersReducedMotion } from '@/anim/motion'
+import { registrarHooks } from '@/dev/testHooks'
 import type { Desfecho, IdJogo, JogoQualquer, Nivel } from '@/types'
 import { TelaInicio } from './TelaInicio'
 import { useMaquina } from './useMaquina'
@@ -168,6 +169,24 @@ export default function App() {
       setEntranceKey((k) => k + 1)
     })
   }, [sair])
+
+  /*
+   * Development only, and gone from the production bundle: `import.meta.env.DEV`
+   * is replaced with `false` at build time, this whole body becomes
+   * unreachable, and `@/dev/testHooks` drops out with it. The screenshots in
+   * `docs/img/` are taken against `npm run dev` for exactly this reason.
+   */
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+    return registrarHooks({
+      jogoAtual: () => jogo?.id ?? null,
+      definirEstado: setEstado,
+      definirTempo: setDecorridoMs,
+      abrirPartida: () => abrir(escolhido, nivel),
+      voltarAoInicio: outraPartida,
+      encerrarPartida: encerrar,
+    })
+  }, [abrir, encerrar, escolhido, jogo, nivel, outraPartida])
 
   return (
     <div ref={stageRef} className="app">
