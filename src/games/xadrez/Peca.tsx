@@ -12,7 +12,7 @@ type PropsPeca = {
 
 /**
  * A single piece. It owns no position: the board places it by transform so a
- * move never re-renders the grid. Decorative — the square button carries the
+ * move never re-renders the grid. Decorative: the square button carries the
  * accessible name.
  */
 function PecaBase({ cor, tipo, innerRef }: PropsPeca) {

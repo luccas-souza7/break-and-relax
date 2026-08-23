@@ -7,7 +7,7 @@ import type { Chess, Color, PieceSymbol, Square } from 'chess.js'
  * object per move, and each one regenerates the whole legal move list to
  * disambiguate SAN and serialises two FENs for `before`/`after`. Measured on
  * a middlegame position that is ~3000us per call against ~70us for the
- * generator underneath it — a 40x tax that makes any real search impossible.
+ * generator underneath it: a 40x tax that makes any real search impossible.
  *
  * So the search calls the generator directly. The rules are still entirely
  * chess.js's: this file adds no move generation of its own, it only skips the
@@ -44,7 +44,7 @@ export function algebraic(square: number): Square {
   return ('abcdefgh'[square & 15] + String(8 - (square >> 4))) as Square
 }
 
-/** 0x88 square index to a row-major index where 0 is a8 — the table layout. */
+/** 0x88 square index to a row-major index where 0 is a8, the table layout. */
 export function tableIndex(square: number): number {
   return (square >> 4) * 8 + (square & 15)
 }

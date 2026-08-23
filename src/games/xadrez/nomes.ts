@@ -1,7 +1,7 @@
 import type { Color, PieceSymbol, Square } from 'chess.js'
 
 /**
- * What the pieces are called. Text only — the images live in `pieces.ts`, so
+ * What the pieces are called. Text only: the images live in `pieces.ts`, so
  * the rules can name a piece without dragging twelve SVGs behind them.
  */
 

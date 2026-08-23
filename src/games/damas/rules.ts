@@ -1,7 +1,7 @@
 import type { Desfecho, Destaque } from '@/types'
 
 /**
- * Brazilian draughts. Pure TypeScript — no React, no DOM, no window. This is
+ * Brazilian draughts. Pure TypeScript: no React, no DOM, no window. This is
  * the file the worker imports.
  *
  * The rules that decide games, stated once so nothing is ambiguous:
@@ -324,7 +324,7 @@ const ENCERRADA: Desfecho = {
   destaques: [],
 }
 
-/** Forty plies — twenty each — of kings shuffling with nothing taken. */
+/** Forty plies (twenty each) of kings shuffling with nothing taken. */
 const LIMITE_ESTERIL = 40
 
 export function avaliarFim(e: EstadoDamas): Desfecho | null {

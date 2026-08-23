@@ -22,16 +22,16 @@ type PropsTelaPartida = {
 /**
  * The board, during and after the game.
  *
- * During: nothing on screen measures anything — no clock, no move count, no
+ * During: nothing on screen measures anything: no clock, no move count, no
  * progress of any kind. Only whose turn it is.
  *
- * After: the same board, at full opacity — smaller, never dimmed. The end of a
+ * After: the same board, at full opacity, only smaller, never dimmed. The end of a
  * game is not a different screen; it is this one with three more rows
  * underneath, and the board gives up the height they need.
  *
  * Rows, not stacking: `auto` for the slot, `minmax(240px, 1fr)` for the board,
  * `auto` for everything below. The board takes the height that is left and
- * never pushes anyone. 240px is the legibility floor — below it the position
+ * never pushes anyone. 240px is the legibility floor: below it the position
  * cannot be read, and reading it is the whole point of this screen. It is also
  * what the root's `min-height: min-content` adds up to decide when the page
  * has genuinely run out of room.
@@ -73,7 +73,7 @@ export function TelaPartida({
   /*
    * Flip needs the geometry from before the layout changed, and by the time an
    * effect runs React has already applied it. So the board's state is captured
-   * on every playing render — it only ever changes when the end rows appear,
+   * on every playing render. It only ever changes when the end rows appear,
    * so any of those captures is the right "before".
    */
   const estadoFlip = useRef<ReturnType<typeof Flip.getState> | null>(null)
@@ -84,7 +84,7 @@ export function TelaPartida({
 
   /*
    * The closing sequence: one timeline, and a slow one on purpose. This is the
-   * quietest moment of the site — nothing here is a result screen.
+   * quietest moment of the site: nothing here is a result screen.
    */
   useLayoutEffect(() => {
     if (!desfecho) return
@@ -131,7 +131,7 @@ export function TelaPartida({
       /*
        * The clock waits for the board to finish shrinking rather than arriving
        * at 1.1s as first drawn. Flip animates from the board's old, larger box,
-       * which reaches up through this very slot on its way down — fading the
+       * which reaches up through this very slot on its way down, so fading the
        * clock in during that would put the two on top of each other, and the
        * clock covering the board is exactly what this screen must never do.
        */
@@ -235,7 +235,7 @@ export function TelaPartida({
       {/*
         Three columns, minmax(0,1fr) auto minmax(0,1fr). The outer tracks are
         equal by construction, so the middle one is centred on the viewport
-        whatever the sides hold — an empty tray and a full one put the board in
+        whatever the sides hold: an empty tray and a full one put the board in
         exactly the same place.
       */}
       <div
@@ -253,7 +253,7 @@ export function TelaPartida({
           width down.
 
           Three columns: the middle track is `auto`, sized *by* this item, so a
-          percentage max-width is circular and gets ignored — which is how the
+          percentage max-width is circular and gets ignored, which is how the
           board came out 888px wide inside a 768px viewport. Container query
           units break the loop: 100cqh and 100cqw read the row, not the track,
           and 11rem is the room the two side columns need.

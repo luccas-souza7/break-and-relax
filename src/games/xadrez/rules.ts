@@ -9,7 +9,7 @@ import type { LanceXadrez, PecaCapturada, PecaVista } from './tipos'
 export type { LanceXadrez, PecaCapturada, PecaVista }
 
 /**
- * Chess rules. Pure TypeScript — no React, no DOM, no window. This is the
+ * Chess rules. Pure TypeScript: no React, no DOM, no window. This is the
  * file the worker imports, and the only place chess.js is consulted.
  *
  * Every rule comes from chess.js: castling, en passant, promotion, check,
@@ -28,7 +28,7 @@ export const MAQUINA: Color = 'b'
  * fresh wrapper so React sees a new reference. Cloning it per move would be
  * both slower and wrong: threefold repetition and the fifty-move rule need
  * the game's history, which a FEN does not carry. Nothing here keeps an
- * earlier state — there is no undo and no time travel — so sharing is safe.
+ * earlier state (there is no undo and no time travel), so sharing is safe.
  */
 export type EstadoXadrez = {
   readonly chess: Chess

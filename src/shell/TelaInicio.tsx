@@ -145,7 +145,7 @@ export function TelaInicio({
           onClick={onTantoFaz}
           className="rounded-sm px-2 py-1 text-xs font-normal text-tinta-fraca transition-colors hover:text-tinta"
         >
-          tanto faz — escolha por mim
+          tanto faz, escolha por mim
         </button>
       </div>
 

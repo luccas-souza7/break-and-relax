@@ -11,7 +11,7 @@ gsap.registerPlugin(Flip)
 /**
  * Motion is one orchestrated sequence, and it is entirely optional.
  * When the visitor asks for stillness, every tween below collapses into an
- * instant state change — nothing is left half-animated.
+ * instant state change: nothing is left half-animated.
  */
 const query = '(prefers-reduced-motion: reduce)'
 
@@ -29,7 +29,7 @@ export function onMotionPreferenceChange(listener: () => void): () => void {
  * Whether an entrance animation may run at all.
  *
  * `gsap.from()` hides the element on the spot and reveals it as the tween
- * plays — which is fine, right up until the tween never plays. GSAP runs on
+ * plays, which is fine right up until the tween never plays. GSAP runs on
  * requestAnimationFrame, and a document that is not being rendered (opened
  * into a background tab, restored from a session) does not get frames. The
  * content would sit at opacity 0 with nothing to bring it back.
@@ -46,7 +46,7 @@ export function canAnimateEntrance(): boolean {
  * The movement vocabulary, in one place.
  *
  * The site is a pause. Nothing here is urgent, nothing announces itself, and
- * nothing overshoots — no `back`, no `elastic`, no `bounce`, no scale above 1.
+ * nothing overshoots: no `back`, no `elastic`, no `bounce`, no scale above 1.
  */
 export const DURACAO = {
   /** Something arriving on screen. */

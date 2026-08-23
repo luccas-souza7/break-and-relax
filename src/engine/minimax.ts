@@ -3,14 +3,14 @@
  *
  * The time budget is a hard wall. When it runs out mid-iteration the whole
  * iteration is discarded and the answer comes from the last depth that
- * actually finished — a half-searched depth plays worse than a shallower
+ * actually finished: a half-searched depth plays worse than a shallower
  * complete one.
  *
  * Moves are made and unmade on a single mutable position rather than through
  * an immutable `aplicar`. That is deliberate: chess.js measures about 70us to
  * generate moves for a position, and cloning the position at every node would
  * cost more than the search itself. The pure `aplicar` in the game contract
- * still exists — it is what the interface uses to advance React state.
+ * still exists: it is what the interface uses to advance React state.
  */
 
 class SemTempo extends Error {}
@@ -31,7 +31,7 @@ export type Busca<E, L> = {
   avaliar: (e: E, quantidadeDeLances: number) => number
   /**
    * Terminal score when there are no legal moves, from the side to move's
-   * point of view — a loss is hugely negative. `ply` lets a nearer mate score
+   * point of view, where a loss is hugely negative. `ply` lets a nearer mate score
    * better than a distant one.
    */
   semLances: (e: E, ply: number) => number

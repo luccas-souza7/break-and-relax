@@ -28,8 +28,8 @@ function descrever(casa: number, peca: PecaDamas | undefined): string {
  *
  * Compulsory capture is enforced by what the rules hand over: when a capture
  * exists, those are the only legal moves, so only the pieces that can take
- * are selectable. A multiple capture is walked one landing square at a time —
- * the piece stays selected and the next hop lights up — so it is never
+ * are selectable. A multiple capture is walked one landing square at a time:
+ * the piece stays selected and the next hop lights up, so it is never
  * unclear why a click was refused.
  */
 export function Tabuleiro({

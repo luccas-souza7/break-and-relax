@@ -23,7 +23,7 @@ function Fila({ pecas, rotulo }: { pecas: PecaDamas[]; rotulo: string }) {
   )
 }
 
-/** Captured pieces. No count, no score — this game does not keep one. */
+/** Captured pieces. No count, no score: this game does not keep one. */
 export function Bandeja({ estado }: PropsLateral<EstadoDamas>) {
   const meus = estado.capturadasPeloHumano
   const dela = estado.capturadasPelaMaquina

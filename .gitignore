@@ -4,3 +4,8 @@ scratch
 .claude
 *.local
 .DS_Store
+
+# Intermediarios da geracao do GIF, nunca commitados: o video bruto do
+# Playwright e a paleta que o ffmpeg gera entre as duas passagens.
+*.webm
+paleta.png

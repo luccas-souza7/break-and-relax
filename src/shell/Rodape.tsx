@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 /**
  * Contacts. Shown on the opening and closing screens, never during the game.
- * No call to action, no pitch — just where to find the author.
+ * No call to action, no pitch: just where to find the author.
  */
 
 const LinkedInIcon = (

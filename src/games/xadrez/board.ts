@@ -5,7 +5,7 @@ export const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'] as const
 
 /**
  * Every square, ordered the way the user sees them: rank 8 first, file a
- * first. The board is always shown from White's side — the user is White.
+ * first. The board is always shown from White's side, because the user is White.
  */
 export const SQUARES_IN_VIEW: Square[] = RANKS.flatMap((rank) =>
   FILES.map((file) => `${file}${rank}` as Square),

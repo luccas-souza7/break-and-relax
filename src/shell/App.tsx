@@ -11,7 +11,7 @@ import { TelaPartida } from './TelaPartida'
  *
  * The shell keeps time, drives the machine and writes the ending on screen
  * without knowing which game is being played: everything it needs arrives
- * through the `Jogo` contract. The end of a game is not a third screen — the
+ * through the `Jogo` contract. The end of a game is not a third screen: the
  * board stays mounted, gives up the height the explanation needs, and the
  * reason is written underneath it.
  */
@@ -47,7 +47,7 @@ export default function App() {
    * Fades the current screen out before swapping, unless motion is off.
    *
    * The swap is driven by a timer, never by the animation finishing. GSAP
-   * runs on requestAnimationFrame, which stops in a hidden tab — hanging the
+   * runs on requestAnimationFrame, which stops in a hidden tab, so hanging the
    * state change off onComplete would strand the page on a faded screen.
    */
   const sair = useCallback((executar: () => void) => {
@@ -66,8 +66,8 @@ export default function App() {
 
   /*
    * Advancing happens here, not inside a state updater. A game's `aplicar`
-   * is free to own a live rules object — chess.js has to keep the move
-   * history for threefold repetition — and React invokes updaters twice in
+   * is free to own a live rules object (chess.js has to keep the move
+   * history for threefold repetition), and React invokes updaters twice in
    * development to surface exactly that kind of impurity. Called twice, the
    * second attempt fails and React keeps the stale state while the real
    * position has already moved on.
@@ -177,7 +177,7 @@ export default function App() {
           estado={estado}
           lancesLegais={lancesLegais}
           /* The machine's turn starts the moment the user moves, not when the
-             worker gets around to answering — otherwise the indicator says
+             worker gets around to answering. Otherwise the indicator says
              "sua vez" for a beat while the board is not actually yours. */
           suaVez={suaVez && !pensando}
           onLance={jogarLance}

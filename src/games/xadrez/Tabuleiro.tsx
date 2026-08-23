@@ -322,7 +322,7 @@ export function Tabuleiro({
                     Coordinates live inside the squares, never in an outer
                     gutter: a gutter would centre the board-plus-gutter, and
                     what has to be centred is the board. Hidden from the
-                    reading order — every square's aria-label already opens
+                    reading order, because every square's aria-label already opens
                     with its notation, and repeating it is just noise.
                   */}
                   {col === 0 && (

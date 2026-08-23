@@ -13,7 +13,7 @@ type Pendente = {
  *
  * The worker is created when the match starts and terminated when it is left,
  * so nothing keeps running behind an idle start screen. The answer is always
- * held back to at least ESPERA_MINIMA_MS — a reply that arrives instantly
+ * held back to at least ESPERA_MINIMA_MS: a reply that arrives instantly
  * reads as a glitch and breaks the rhythm of the break.
  */
 export function useMaquina(jogo: JogoQualquer | null) {

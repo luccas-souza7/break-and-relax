@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------
-   Break And Relax — design tokens
+   Break And Relax: design tokens
    The palette is deliberately small. Blue and wine appear only in
    the exact roles listed below; nothing else may use them.
    --------------------------------------------------------------- */
@@ -12,7 +12,7 @@
   /*
    * Specified as #6B7268, darkened by 6% to clear WCAG AA.
    * Against --fundo the original measures 4.11:1, under the 4.5:1 floor for
-   * normal text, and this token exists precisely for small secondary text —
+   * normal text, and this token exists precisely for small secondary text:
    * captions, the footer, "Encerrar partida". The hue is untouched (a straight
    * scale of the same RGB triple) and the shift is imperceptible; the contrast
    * requirement in the brief is not.
@@ -108,12 +108,12 @@
 /*
  * The app owns the viewport.
  *
- * `height: 100dvh` is what makes the row grids below resolve — a percentage
+ * `height: 100dvh` is what makes the row grids below resolve: a percentage
  * row needs a definite height to divide up, and `dvh` rather than `vh` so the
  * mobile address bar does not push the page taller than the screen.
  *
  * `min-height: min-content` is the escape valve. Once the compression ladder
- * is exhausted — at 400% zoom, or a very short window — the rows can no
+ * is exhausted (at 400% zoom, or a very short window), the rows can no
  * longer fit and the container grows past the viewport instead of clipping
  * what is inside it. No threshold, no magic number: the content decides.
  *
@@ -135,8 +135,8 @@
  * screen turns sideways too. The board takes the full height on the left and
  * everything else stacks on the right.
  *
- * Here height is what binds, so the board goes back to being sized by it —
- * the container-query width used in portrait would be circular against an
+ * Here height is what binds, so the board goes back to being sized by it.
+ * The container-query width used in portrait would be circular against an
  * `auto` column that this very item is sizing.
  */
 @media (max-height: 620px) and (orientation: landscape) {
@@ -167,7 +167,7 @@
 /*
  * Focus is always visible, always the accent, always 2px.
  * Deliberately unlayered: Tailwind utilities live in a cascade layer, and
- * unlayered rules outrank every layer — otherwise `outline-none`, which
+ * unlayered rules outrank every layer. Otherwise `outline-none`, which
  * shadcn's button carries by default, would quietly win.
  */
 :focus-visible {

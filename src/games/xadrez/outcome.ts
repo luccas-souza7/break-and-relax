@@ -7,7 +7,7 @@ import { nomeDaPeca } from './nomes'
 /**
  * Turns a finished position into something a person can read.
  *
- * Every sentence is filled with the real squares and the real pieces — a
+ * Every sentence is filled with the real squares and the real pieces. A
  * generic "you lost" is exactly what this screen exists to replace. The
  * player should be able to look at the board and see why it ended.
  */
@@ -20,8 +20,8 @@ function kingSquare(chess: Chess, color: Color): Square | null {
 
 /**
  * The squares around the king that are not blocked by his own men. On a mate
- * or a stalemate every one of them is covered by the opponent — that is what
- * makes it a mate or a stalemate — so they all light up as unavailable.
+ * or a stalemate every one of them is covered by the opponent, and that is
+ * what makes it a mate or a stalemate, so they all light up as unavailable.
  */
 function escapeSquares(chess: Chess, king: Square, color: Color): Square[] {
   const row = rowOf(king)
@@ -79,7 +79,7 @@ function mate(chess: Chess): Desfecho {
     resultado: humanLost ? 'derrota' : 'vitoria',
     titulo: 'Xeque-mate',
     explicacao: humanLost
-      ? `Seu rei em ${king} está atacado por ${atacante} em ${casaAtacante}. As casas de fuga estão marcadas — todas cobertas.`
+      ? `Seu rei em ${king} está atacado por ${atacante} em ${casaAtacante}. As casas de fuga estão marcadas: todas cobertas.`
       : `O rei da máquina em ${king} está atacado por ${atacante} em ${casaAtacante} e não tem para onde ir, nem como bloquear ou capturar.`,
     destaques,
   }

@@ -10,7 +10,7 @@ type PropsDisco = {
 
 /**
  * A draughts piece: a disc in the project's own palette. A king carries an
- * inner ring rather than a crown — at this size a glyph turns to mush.
+ * inner ring rather than a crown, because at this size a glyph turns to mush.
  */
 function DiscoBase({ cor, dama, innerRef }: PropsDisco) {
   const clara = cor === 'clara'

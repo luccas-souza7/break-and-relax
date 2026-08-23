@@ -138,7 +138,7 @@ export function avaliar(chess: Chess, moveCount?: number): number {
   }
 
   /* A small nudge toward having somewhere to go. Counted for the side to
-     move only — generating both sides' moves would cost more than it is
+     move only, because generating both sides' moves would cost more than it is
      worth at these depths. The search passes in the count it already has. */
   const mobility = (moveCount ?? chess.moves().length) * MOBILITY_WEIGHT
   score += chess.turn() === 'w' ? mobility : -mobility

@@ -28,7 +28,7 @@ function Fila({ pecas, rotulo }: { pecas: PecaCapturada[]; rotulo: string }) {
 }
 
 /**
- * Captured pieces. Deliberately no count and no material score — that would
+ * Captured pieces. Deliberately no count and no material score, which would
  * be a scoreboard, and this game does not keep score.
  */
 export function Bandeja({ estado }: PropsLateral<EstadoXadrez>) {

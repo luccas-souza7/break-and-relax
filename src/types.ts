@@ -4,7 +4,7 @@ import type { ComponentType } from 'react'
  * The contract between the shell and a game.
  *
  * The shell renders three screens, keeps time, talks to a worker and writes
- * the ending on screen — and knows nothing about chess or draughts while
+ * the ending on screen, and knows nothing about chess or draughts while
  * doing it. Nothing under `src/shell/` may import from
  * `src/games/<id>/rules.ts`; everything it needs arrives through here.
  *
@@ -21,10 +21,10 @@ export type Resultado = 'vitoria' | 'derrota' | 'empate' | 'encerrada'
  * A place worth looking at once the game is over. The shell paints it and
  * never asks what it means.
  *
- * `decisivo`  — answers "why did it end": the mated king, the last tile down.
- * `atacante`  — what carried the ending out.
- * `bloqueado` — where the loser could not go. This is the one that makes a
- *               mate or a stalemate make sense to someone staring at it.
+ * `decisivo`  answers "why did it end": the mated king, the last tile down.
+ * `atacante`  is what carried the ending out.
+ * `bloqueado` is where the loser could not go. This is the one that makes a
+ *             mate or a stalemate make sense to someone staring at it.
  */
 export type Destaque = {
   chave: string

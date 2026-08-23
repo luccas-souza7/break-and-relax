@@ -1,0 +1,13 @@
+#!/bin/sh
+# Regra do repositorio: nenhum travessao em lugar nenhum, mensagem de commit
+# inclusive. Use virgula, dois-pontos, parenteses ou ponto. Nunca hifen entre
+# espacos, que e o mesmo problema com outra roupa.
+#
+# Os dois caracteres proibidos entram por escape octal (UTF-8 de U+2014 e
+# U+2013), para que nem este arquivo os contenha.
+padrao=$(printf "\342\200\224\|\342\200\223")
+if grep -q "$padrao" "$1"; then
+  echo "commit recusado: a mensagem contem travessao (em dash) ou meia-risca (en dash)." >&2
+  echo "Troque por virgula, dois-pontos, parenteses ou ponto final." >&2
+  exit 1
+fi

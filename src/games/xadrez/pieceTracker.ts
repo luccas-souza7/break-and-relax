@@ -7,7 +7,7 @@ import type { PecaCapturada, PecaVista } from './tipos'
  *
  * The board layer is static; pieces are separate elements that keep their DOM
  * node for the whole game so a move can be tweened on one element. That only
- * works if every piece has an id that survives the move — which means the
+ * works if every piece has an id that survives the move, which means the
  * piece list is updated incrementally from the move descriptor, never rebuilt
  * from the resulting position.
  *
