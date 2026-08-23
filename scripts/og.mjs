@@ -9,6 +9,11 @@
  * mostram o mesmo arquivo, entao nao existe a possibilidade de um mudar e o
  * outro ficar para tras.
  *
+ * Consequencia de licenca: o favicon e obra derivada das pecas Cburnett, sob
+ * CC BY-SA 3.0, e o PNG que sai daqui embute esse desenho. Logo o og.png herda
+ * a mesma licenca, e nao a MIT do repositorio. A atribuicao esta no favicon,
+ * no README e em public/THIRD-PARTY-NOTICES.txt.
+ *
  * As fontes entram embutidas em base64, e nao por file://, porque a pagina e
  * montada com setContent e nasce sem origem: dali o Chromium recusa buscar
  * arquivo do disco. Embutido tambem garante o mesmo desenho sem rede.

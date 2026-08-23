@@ -13,7 +13,7 @@ Gerado por npm run notices. Nao edite a mao.
 105 pacotes e 1 asset(s) fora do npm.
 
 ------------------------------------------------------------------------------
-Pecas de xadrez Cburnett src/assets/pieces/
+Pecas de xadrez Cburnett src/assets/pieces/, public/favicon.svg, public/og.png
 Licenca: CC BY-SA 3.0
 ------------------------------------------------------------------------------
 
@@ -21,8 +21,17 @@ Conjunto de pecas de xadrez de Colin M. L. Burnett.
 Licenca: Creative Commons Attribution-ShareAlike 3.0 Unported.
 Texto completo: https://creativecommons.org/licenses/by-sa/3.0/
 
-Os arquivos estao em src/assets/pieces/ sem modificacao. O logo do site
-nao deriva deles: e desenho proprio, em public/favicon.svg.
+As pecas em src/assets/pieces/ estao sem modificacao.
+
+O logo do site e OBRA DERIVADA de uma delas, a "Chess klt45.svg", e por
+isso carrega a mesma licenca, e nao a MIT do repositorio. Sao dois
+arquivos: public/favicon.svg, que redesenha os contornos da peca como
+silhueta cheia, sem traco, com olho e narina vazados e enquadramento
+fechado de 45 para 37 unidades; e public/og.png, que embute esse mesmo
+desenho ampliado.
+
+Share-alike: quem reusar ou modificar esses dois arquivos precisa manter
+esta licenca e esta atribuicao.
 
 ------------------------------------------------------------------------------
 @floating-ui/core 1.8.0

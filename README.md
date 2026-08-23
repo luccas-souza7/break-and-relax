@@ -373,10 +373,15 @@ usado pelo Lichess.
 As peças de damas são desenhadas em SVG e CSS na paleta do projeto.
 
 O cavalo que serve de logo, em `public/favicon.svg` e no cartão de
-compartilhamento, é **desenho próprio**, feito para este projeto. Ele não deriva
-das peças Cburnett de propósito: CC BY-SA é uma licença com *share-alike*, e um
-logo derivado delas teria de sair sob a mesma licença, o que deixaria a marca do
-site livre para qualquer um reusar e modificar.
+compartilhamento `public/og.png`, é **obra derivada** de uma dessas peças, a
+`wN.svg`. As modificações: descartado o traço e o preenchimento branco, os dois
+contornos viraram formas cheias na tinta do projeto, olho e narina passaram a
+vazados na cor do fundo, e o enquadramento fechou de 45 para 37 unidades.
+Nenhuma coordenada foi reescalada.
+
+Como CC BY-SA é uma licença com *share-alike*, **esses dois arquivos seguem a
+CC BY-SA 3.0**, e não a MIT do repositório. Quem reusar ou modificar o logo
+precisa manter a mesma licença e a mesma atribuição a Colin M. L. Burnett.
 
 As fontes são Bricolage Grotesque, Public Sans e Martian Mono, todas sob
 [OFL 1.1](https://openfontlicense.org/), e a animação usa
@@ -386,9 +391,13 @@ As fontes são Bricolage Grotesque, Public Sans e Martian Mono, todas sob
 
 MIT, veja [LICENSE](LICENSE).
 
-A licença MIT cobre o **código** deste repositório. As peças Cburnett são
-**assets de terceiros** e seguem a licença própria delas, CC BY-SA 3.0, como
-indicado acima.
+A licença MIT cobre o **código** deste repositório. Ficam de fora, sob
+CC BY-SA 3.0:
+
+- `src/assets/pieces/`, as peças Cburnett, sem modificação
+- `public/favicon.svg` e `public/og.png`, o logo, que deriva delas
+
+O detalhe está em [Créditos](#créditos).
 
 Os avisos de copyright de tudo que é redistribuído com a build estão em
 [`public/THIRD-PARTY-NOTICES.txt`](public/THIRD-PARTY-NOTICES.txt), gerado por
