@@ -36,10 +36,10 @@ peças reais, nunca um texto genérico.
 
 São três tipos de destaque, e cada um responde a uma pergunta diferente:
 
-| Destaque | Cor | Responde |
-|---|---|---|
-| Decisivo | vinho | por que acabou |
-| Atacante | azul | quem executou |
+| Destaque  | Cor       | Responde                     |
+| --------- | --------- | ---------------------------- |
+| Decisivo  | vinho     | por que acabou               |
+| Atacante  | azul      | quem executou                |
 | Bloqueado | hachurado | para onde o rei não podia ir |
 
 O terceiro é o que faz um mate ou um afogamento fazer sentido de olhar. Um
@@ -55,41 +55,53 @@ A aposta aqui é que uma pausa precisa de **fim**, e que o fim precisa ser natur
 em vez de imposto. Uma partida acaba sozinha. Ela não pede que você volte amanhã,
 não guarda seu progresso, não tem o que perder se você fechar a aba no meio.
 
-Essa aposta tem base na literatura, e tem contra ela um achado que este README
-apresenta na sequência, em vez de esconder.
+Essa aposta tem base na literatura, e tem limites. As duas coisas estão nas
+seções a seguir.
 
 ## Base científica
 
-Micropausas têm respaldo: Albulescu et al. (2022), meta-análise com 22 amostras e
+Micropausas têm respaldo. Albulescu et al. (2022), meta-análise com 22 amostras e
 2.335 participantes, achou efeito sobre vigor (`d = 0,36`) e fadiga (`d = 0,35`),
 e sobre desempenho `d = 0,16`, **não significativo** (`p = 0,116`). O HSE
 recomenda o mesmo formato para trabalho de tela: pausas curtas e frequentes.
 
-E há uma objeção séria. Kim, Park e Niu (2017), estudo diário com 86
-trabalhadores de escritório em 10 dias, viram relaxamento e atividade social
-atenuarem a relação entre demanda e afeto negativo, mas **atividade cognitiva
-fortalecê-la**, ou seja, piorá-la. Xadrez e damas são atividade cognitiva: este
-site é feito do tipo de pausa que esse estudo aponta como o pior dos três.
+O que a literatura não fecha é qual atividade fazer na pausa. A própria
+meta-análise registra que não conseguiu testar isso por falta de dados, e o
+estudo que testou aponta em direção incômoda: Kim, Park e Niu (2017), diário com
+86 trabalhadores de escritório ao longo de 10 dias, viram relaxamento e conversa
+atenuarem a relação entre demanda e afeto negativo, enquanto **atividade
+cognitiva a fortaleceu**. Xadrez e damas são atividade cognitiva, então o achado
+fala diretamente sobre este site.
 
-Some a fisiologia: Troubat et al. (2009) mediram a frequência cardíaca de 20
+Há também a fisiologia. Troubat et al. (2009) mediram a frequência cardíaca de 20
 enxadristas subindo de 75 para 86 bpm durante o jogo, e Dovom et al. (2024) viram
-cortisol salivar em alta e vigor em queda em 14 adolescentes, torneio oficial.
+cortisol salivar em alta e vigor em queda em 14 adolescentes, em torneio oficial.
 
-A resposta de projeto não promete resultado. Essa fisiologia foi medida em
-contexto competitivo (torneio, ranking, resultado valendo), que é o que este site
-remove de propósito. Sobra o fator que Hunter e Wu (2016) acharam mais forte em
-95 trabalhadores: a pausa ser preferida e escolhida. Não é resultado testado.
+Duas coisas separam essa evidência do que este site é.
+
+A primeira é o **contexto**. Toda a fisiologia acima foi medida em competição,
+com torneio, ranking e resultado valendo. É exatamente o que aqui foi removido de
+propósito: sem cadastro, sem cronômetro, sem ranking, sem placar acumulado.
+
+A segunda é a **escolha**. Hunter e Wu (2016), com 95 trabalhadores ao longo de 5
+dias, acharam que o fator mais forte de recuperação não é o tipo de atividade,
+é a pausa ser preferida, escolhida por gosto. Quem não gosta de xadrez não
+deveria usar isto como pausa, e o site não insiste: ele não notifica, não lembra
+e não guarda progresso.
+
+Nada disso é resultado testado. É decisão de projeto informada por literatura,
+que é uma coisa bem menor, e a seção seguinte diz exatamente quanto menor.
 
 ## O que a evidência não sustenta
 
 Não afirmo, em primeira pessoa:
 
 - **Que jogar xadrez reduz o estresse.** A evidência aponta o contrário em
-  contexto competitivo, e não há estudo sobre partida casual sem placar.
+contexto competitivo, e não há estudo sobre partida casual sem placar.
 - **Que este site reduz fadiga ou melhora bem-estar.** Ele nunca foi testado. O
-  que tem respaldo é a micropausa em geral, com efeito pequeno.
+que tem respaldo é a micropausa em geral, com efeito pequeno.
 - **Que atividade cognitiva é a melhor forma de recuperar.** Para trabalhador de
-  escritório, a evidência favorece relaxamento e socialização.
+escritório, a evidência favorece relaxamento e socialização.
 - **Qualquer alegação de saúde, terapêutica ou clínica.**
 
 > Micropausas curtas e voluntárias têm respaldo científico para reduzir fadiga e
@@ -97,6 +109,9 @@ Não afirmo, em primeira pessoa:
 > opcional de fazer essa pausa, deliberadamente sem cadastro, cronômetro,
 > ranking ou gamificação, para não transformar o descanso em mais uma fonte de
 > pressão. Não é uma intervenção clínica testada.
+
+O aprofundamento das teorias de recuperação e do contexto normativo brasileiro
+está em [docs/evidencia.md](docs/evidencia.md).
 
 ## Referências
 
@@ -172,15 +187,15 @@ interface Jogo<Estado, Lance> {
 As consequências valem mais que o diagrama:
 
 - **Nada em `src/shell/` importa `src/games/*/rules.ts`.** A única menção a
-  `src/games/` na casca é o `import()` dinâmico que carrega um jogo.
+`src/games/` na casca é o `import()` dinâmico que carrega um jogo.
 - **Selecionar peça e escolher a promoção são do jogo.** A casca recebe um lance
-  pronto e nunca aprende o que é uma promoção.
+pronto e nunca aprende o que é uma promoção.
 - **O `Desfecho` já chega escrito.** Título, explicação e casas para destacar vêm
-  prontos, e a casca não sabe o que é um rei.
+prontos, e a casca não sabe o que é um rei.
 - **Um worker por jogo**, criado quando a partida começa, com `terminate()` ao
-  sair.
+sair.
 - **Carregamento sob demanda.** Abrir o site e jogar xadrez não baixa o código de
-  damas.
+damas.
 
 ### Os motores
 
@@ -194,10 +209,10 @@ Ele recebe `fazer` e `desfazer` sobre uma posição mutável, não um `aplicar`
 imutável. Isso é deliberado: o chess.js leva cerca de 70 µs para gerar os lances
 de uma posição, e clonar a posição a cada nó custaria mais que a própria busca.
 
-| Jogo | Tranquilo | Normal | Desafio | Teto por lance |
-|---|---|---|---|---|
+| Jogo   | Tranquilo                            | Normal      | Desafio                      | Teto por lance      |
+| ------ | ------------------------------------ | ----------- | ---------------------------- | ------------------- |
 | Xadrez | prof. 1, sorteia entre os 3 melhores | prof. até 3 | prof. até 4 mais quiescência | 600 / 600 / 1000 ms |
-| Damas | prof. 4, sorteia entre os 3 melhores | prof. 6 | prof. 8 | 600 / 600 / 1000 ms |
+| Damas  | prof. 4, sorteia entre os 3 melhores | prof. 6     | prof. 8                      | 600 / 600 / 1000 ms |
 
 Damas comporta profundidade muito maior que xadrez com o mesmo orçamento porque
 a captura obrigatória corta o fator de ramificação de forma agressiva.
@@ -227,13 +242,13 @@ biblioteca. As quatro que decidem partidas:
 
 1. **Captura é obrigatória.** Havendo captura, nenhum lance simples é legal.
 2. **Lei da maioria.** Entre as sequências possíveis, é obrigatório escolher a
-   que captura mais peças. Empate na quantidade, escolha livre. Sem lei da
-   qualidade e sem sopro.
+que captura mais peças. Empate na quantidade, escolha livre. Sem lei da
+qualidade e sem sopro.
 3. **Promoção só ao terminar** na última fileira. Uma pedra que apenas *passa*
-   por ela no meio de uma captura continua pedra.
+por ela no meio de uma captura continua pedra.
 4. **Dama voa.** Anda e captura à distância, pousando em qualquer casa livre
-   depois da peça capturada. Nunca se saltam duas peças coladas, e as capturadas
-   só saem do tabuleiro no fim da sequência: até lá elas ainda bloqueiam.
+depois da peça capturada. Nunca se saltam duas peças coladas, e as capturadas
+só saem do tabuleiro no fim da sequência: até lá elas ainda bloqueiam.
 
 ![Partida de damas com captura obrigatória em curso: a pedra clara de d4 está selecionada, o primeiro salto já foi dado em f6, e as duas casas onde a sequência pode terminar, h8 e h4, aparecem aneladas. Nenhuma outra peça clara pode ser movida, porque havendo captura nenhum lance simples é legal](docs/img/partida-damas.png)
 
@@ -271,7 +286,7 @@ realmente ficou sem espaço.
 - GSAP (core mais Flip) para a sequência de animação
 - shadcn/ui (`button`, `dialog`, `tooltip`) e `lucide-react`
 - Fontes auto-hospedadas via Fontsource: Bricolage Grotesque, Public Sans e
-  Martian Mono
+Martian Mono
 - `vite-plugin-pwa` só para precache, sem manifesto e sem prompt de instalação
 - Deploy estático via GitHub Actions para GitHub Pages
 
@@ -281,9 +296,6 @@ Não há backend, banco, API em runtime nem CDN.
 
 ```bash
 npm install
-```
-
-```bash
 npm run dev
 ```
 
@@ -316,16 +328,6 @@ O cartão é montado com as fontes e as cores do próprio site, e o cavalo sai d
 `npm ci` e `npm run build`, nunca o Playwright, então a imagem precisa já estar
 no repositório.
 
-Para regerar os avisos de licença das dependências:
-
-```bash
-npm run notices
-```
-
-Rode depois de mexer nas dependências de produção. Ele percorre o fecho
-transitivo de `dependencies` e reescreve `public/THIRD-PARTY-NOTICES.txt`, que
-também é versionado, pelo mesmo motivo do `og.png`.
-
 ## Estrutura do projeto
 
 ```
@@ -340,8 +342,7 @@ src/
   types.ts        o contrato entre a casca e um jogo
 scripts/
   screenshots.mjs gera docs/img/ inteiro
-  og.mjs          gera public/og.png, o cartao do compartilhamento
-  notices.mjs     gera os avisos de licenca dos pacotes de producao
+  og.mjs          gera public/og.png, o cartão do compartilhamento
 docs/
   evidencia.md    o aprofundamento científico e normativo
   img/            prints e GIF, todos gerados por script
@@ -350,16 +351,16 @@ docs/
 ## Acessibilidade
 
 - Contraste **WCAG AA** em todo texto. O token de texto secundário foi escurecido
-  6% em relação ao valor original do design, que media 4,11:1 contra o piso de
-  4,5:1, preservando a matiz.
+6% em relação ao valor original do design, que media 4,11:1 contra o piso de
+4,5:1, preservando a matiz.
 - Tabuleiro navegável por teclado, com `role="grid"` e `aria-label` descrevendo
-  cada casa (a peça e a coordenada).
+cada casa (a peça e a coordenada).
 - Indicador de vez em `aria-live="polite"`.
 - `prefers-reduced-motion` respeitado: com movimento reduzido a sequência de fim
-  chega ao mesmo estado final, instantaneamente e sem nada se mexer.
+chega ao mesmo estado final, instantaneamente e sem nada se mexer.
 - Rolagem **horizontal nunca**, em nenhum tamanho nem zoom. Em zoom de 400% o
-  conteúdo continua alcançável, rolando na vertical se precisar, que é o que o
-  WCAG 1.4.10 permite.
+conteúdo continua alcançável, rolando na vertical se precisar, que é o que o
+WCAG 1.4.10 permite.
 - Foco visível em todo elemento interativo.
 - Sem som, sem vibração e sem notificação.
 
@@ -372,36 +373,13 @@ usado pelo Lichess.
 
 As peças de damas são desenhadas em SVG e CSS na paleta do projeto.
 
-O cavalo que serve de logo, em `public/favicon.svg` e no cartão de
-compartilhamento `public/og.png`, é **obra derivada** de uma dessas peças, a
-`wN.svg`. As modificações: descartado o traço e o preenchimento branco, os dois
-contornos viraram formas cheias na tinta do projeto, olho e narina passaram a
-vazados na cor do fundo, e o enquadramento fechou de 45 para 37 unidades.
-Nenhuma coordenada foi reescalada.
-
-Como CC BY-SA é uma licença com *share-alike*, **esses dois arquivos seguem a
-CC BY-SA 3.0**, e não a MIT do repositório. Quem reusar ou modificar o logo
-precisa manter a mesma licença e a mesma atribuição a Colin M. L. Burnett.
-
-As fontes são Bricolage Grotesque, Public Sans e Martian Mono, todas sob
-[OFL 1.1](https://openfontlicense.org/), e a animação usa
-[GSAP](https://gsap.com/standard-license), sob a licença padrão sem custo.
-
 ## Licença
 
 MIT, veja [LICENSE](LICENSE).
 
-A licença MIT cobre o **código** deste repositório. Ficam de fora, sob
-CC BY-SA 3.0:
-
-- `src/assets/pieces/`, as peças Cburnett, sem modificação
-- `public/favicon.svg` e `public/og.png`, o logo, que deriva delas
-
-O detalhe está em [Créditos](#créditos).
-
-Os avisos de copyright de tudo que é redistribuído com a build estão em
-[`public/THIRD-PARTY-NOTICES.txt`](public/THIRD-PARTY-NOTICES.txt), gerado por
-`npm run notices` e servido junto com o site.
+A licença MIT cobre o **código** deste repositório. As peças Cburnett são
+**assets de terceiros** e seguem a licença própria delas, CC BY-SA 3.0, como
+indicado acima.
 
 ## Contato
 
